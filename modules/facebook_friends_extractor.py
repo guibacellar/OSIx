@@ -89,14 +89,24 @@ class FacebookFriendListExtractor(BaseModule):
                 friend_name: str = list(single_friend_div.children)[1].find('a').text
                 fb_id: str = json.loads(single_friend_div.find('a', 'touchable')['data-store'])['id']
 
-                # Build new Data
-                new_friend_item: Dict = constants.SINGLE_FB_FRIEND_DATA_ITEM.copy()
-                new_friend_item['name'] = friend_name
-                new_friend_item['id'] = fb_id
-                new_friend_item['path'] = friend_path
+                # Check if the Current Friend is Already in the Data
+                is_new: bool = False
+                friend_item: Dict = constants.SINGLE_FB_FRIEND_DATA_ITEM.copy()
 
                 try:
-                    new_friend_item['profile_pic'] = self.profile_pic_regex\
+                    friend_item = [
+                        item for item in data['facebook']['profiles'][target_profile]['friends'] if item['id'] == fb_id
+                        ][0]
+                except IndexError:
+                    is_new = True
+
+                # Update Data
+                friend_item['name'] = friend_name
+                friend_item['id'] = fb_id
+                friend_item['path'] = friend_path
+
+                try:
+                    friend_item['profile_pic'] = self.profile_pic_regex\
                         .findall(friend_image_path)[0]\
                         .replace("url('", '')\
                         .replace("')", "")\
@@ -106,7 +116,8 @@ class FacebookFriendListExtractor(BaseModule):
                         .replace(' ', '')
 
                 except KeyError:
-                    new_friend_item['profile_pic'] = friend_image_path
+                    friend_item['profile_pic'] = friend_image_path
 
                 # Add Into Data
-                data['facebook']['profiles'][target_profile]['friends'].append(new_friend_item)
+                if is_new:
+                    data['facebook']['profiles'][target_profile]['friends'].append(friend_item)
