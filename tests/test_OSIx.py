@@ -6,5 +6,5 @@ import pytest
 
 class OSIxTest(unittest.TestCase):
 
-    def foo_test(self):
+    def test_foo(self):
         assert True

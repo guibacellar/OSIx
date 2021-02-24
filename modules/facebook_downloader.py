@@ -1,13 +1,14 @@
-"""
-Facebook Downloader Module.
-"""
+"""Facebook Downloader Module."""
+
 import time
-from configparser import ConfigParser
 from typing import Dict
-from core.temp_file import TempFileHandler
+
+from configparser import ConfigParser
 from selenium.webdriver.common.keys import Keys
+
 from core.base_module import BaseModule
 from core.chrome_driver_manager import ChromeDrivers
+from core.temp_file import TempFileHandler
 
 
 class FacebookFriendListDownloader(BaseModule):
@@ -47,7 +48,7 @@ class FacebookFriendListDownloader(BaseModule):
         while True:
             body = browser.find_element_by_css_selector('body')
 
-            for i in range(8):
+            for _ in range(8):
                 time.sleep(0.1)
                 body.send_keys(Keys.PAGE_DOWN)
 
@@ -66,9 +67,6 @@ class FacebookFriendListDownloader(BaseModule):
         browser.minimize_window()
 
         # Extract Friends
-        TempFileHandler.write_file_text(
-            target_file,
-            browser.page_source
-        )
+        TempFileHandler.write_file_text(target_file, browser.page_source)
 
         print('OK')

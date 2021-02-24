@@ -1,18 +1,24 @@
-"""
-Facebook Friend List Extractor
-"""
-from bs4 import BeautifulSoup
-from core import constants
+"""Facebook Friend List Extractor."""
+
 from configparser import ConfigParser
-from typing import Dict
+import json
+import re
+from typing import Dict, Optional
+
+from bs4 import BeautifulSoup, Tag
+
+from core import constants
 from core.base_module import BaseModule
 from core.temp_file import TempFileHandler
-import re
-import json
 
 
 class FacebookFriendListExtractor(BaseModule):
     """Temporary File Manager."""
+
+    def __init__(self) -> None:
+        """Module Initialization."""
+
+        self.profile_pic_regex: re.Pattern = re.compile("url\\('.*'\\)")
 
     def run(self, config: ConfigParser, args: Dict, data: Dict) -> None:
         """Execute Module."""
@@ -29,32 +35,51 @@ class FacebookFriendListExtractor(BaseModule):
         # Check if File Exists
         if not TempFileHandler.file_exist(target_file):
             print(f'\t\t Target File "{target_file}" not Exists.')
+            return
 
         # Check if Target Profile Alread in Data Struct
         if target_profile not in data['facebook']['profiles']:
             data['facebook']['profiles'][target_profile] = constants.SINGLE_FB_PROFILE_DATA_ITEM.copy()
 
-        # Prepare RegEx
-        profile_pic_regex: re = re.compile("url\('.*'\)")
-
         # Open File to BS4
-        soup = BeautifulSoup(''.join(TempFileHandler.read_file_text(target_file)), 'html.parser')
+        soup: BeautifulSoup = BeautifulSoup(''.join(TempFileHandler.read_file_text(target_file)), 'html.parser')
 
         # Extract Friends
-        timeline_div = soup\
+        timeline_div: Tag = soup\
             .find('div', id='viewport')\
             .find('div', id='rootcontainer')\
             .find('div', id='root')\
             .find('div', 'timeline')
 
-        friends_blocks = timeline_div.find('header').find_next_sibling().children
+        friends_blocks: Tag = timeline_div.find('header').find_next_sibling().children
+
+        self.__process_friends_blocks(
+            friends_blocks=friends_blocks,
+            target_profile=target_profile,
+            data=data
+            )
+
+        total_friends: int = len(data['facebook']['profiles'][target_profile]['friends'])
+        print(f'\t\t[+] Extracted {total_friends} Friends')
+
+    def __process_friends_blocks(self, friends_blocks: Tag, target_profile: str, data: Dict) -> None:
+        """
+        Parse Friends List Block.
+
+        :param friends_blocks: Friends List Block Tag
+        :param target_profile: Target Profile
+        :param data: Data Object
+        :return: None
+        """
 
         for single_block in friends_blocks:
             for single_friend_div in single_block.children:
+
+                friend_path: Optional[str] = None
                 try:
-                    friend_path: str = single_friend_div.find('a')['href']
-                except:
-                    friend_path: str = None
+                    friend_path = single_friend_div.find('a')['href']
+                except KeyError:
+                    pass
 
                 friend_image_path: str = single_friend_div.find('i', 'profpic')['style']
                 friend_name: str = list(single_friend_div.children)[1].find('a').text
@@ -65,20 +90,19 @@ class FacebookFriendListExtractor(BaseModule):
                 new_friend_item['name'] = friend_name
                 new_friend_item['id'] = fb_id
                 new_friend_item['path'] = friend_path
+
                 try:
-                    new_friend_item['profile_pic'] = profile_pic_regex\
-                            .findall(friend_image_path)[0]\
-                            .replace("url('", '')\
-                            .replace("')", "")\
-                            .replace('\\3a', ':')\
-                            .replace('\\3d', '=')\
-                            .replace('\\26', '&')\
-                            .replace(' ', '')
-                except:
+                    new_friend_item['profile_pic'] = self.profile_pic_regex\
+                        .findall(friend_image_path)[0]\
+                        .replace("url('", '')\
+                        .replace("')", "")\
+                        .replace('\\3a', ':')\
+                        .replace('\\3d', '=')\
+                        .replace('\\26', '&')\
+                        .replace(' ', '')
+
+                except KeyError:
                     new_friend_item['profile_pic'] = friend_image_path
 
                 # Add Into Data
                 data['facebook']['profiles'][target_profile]['friends'].append(new_friend_item)
-
-        total_friends: int = len(data['facebook']['profiles'][target_profile]['friends'])
-        print(f'\t\t[+] Extracted {total_friends} Friends')

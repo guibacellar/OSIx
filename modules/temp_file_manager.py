@@ -1,10 +1,12 @@
 """Temporary Files Manager."""
 
-import os
-from configparser import ConfigParser
-from typing import Dict
 from datetime import datetime
+from configparser import ConfigParser
+import os
+from typing import Dict
+
 import pytz
+
 from core.base_module import BaseModule
 
 
@@ -24,6 +26,7 @@ class TempFileManager(BaseModule):
     def check_folder_items_age(self, path: str, max_age_seconds: int) -> None:
         """
         Check Folder Items Age.
+
         :param path: Path to Check
         :param max_age_seconds: Max Age in Seconds
         :return: None
@@ -38,6 +41,7 @@ class TempFileManager(BaseModule):
     def purge_folder(self, path: str) -> None:
         """
         Purge a Single Folder.
+
         :param path: Folder Path
         :return:
         """
@@ -46,4 +50,3 @@ class TempFileManager(BaseModule):
 
         for file in os.scandir(path):
             os.remove(file)
-

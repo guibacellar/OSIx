@@ -1,18 +1,19 @@
 """
-OSIx - Open Source Intelligence eXplorer
+OSIx - Open Source Intelligence eXplorer.
+
 By: Th3 0bservator
 """
 
-"""Main Module - EntryPoint."""
-
-import os
-from configparser import ConfigParser
-from typing import Dict, List
 import argparse
 import importlib
-import types
-from core.base_module import BaseModule
 import json
+import os
+import types
+
+from configparser import ConfigParser
+from typing import Dict, List, Optional
+
+from core.base_module import BaseModule
 from core.temp_file import TempFileHandler
 from core.chrome_driver_manager import ChromeDrivers
 
@@ -29,32 +30,32 @@ class OSIx:
     def __init__(self) -> None:
         """Module Initialization."""
 
-        self.config: ConfigParser = None
+        self.config: Optional[ConfigParser] = None
         self.available_modules: List[str] = []
         self.args: Dict = {
             'facebook_get_friends': False,
             'facebook_target_account': '',
             'purge_temp_files': False
-        }
+            }
         self.data = {
             'facebook': {
                 'primary_target': '',
                 'current_target': '',
                 'profiles': {}  # Uses SINGLE_FB_PROFILE_DATA_ITEM
+                }
             }
-        }
 
-    def main(self) -> None:
+    def main(self) -> int:
         """Application Entrypoint."""
 
         print(BANNER)
 
         # Ensure Temp Data Structure
-        # TODO: Melhorar Isso
+        # PENDENTE: Melhorar Isso
         TempFileHandler.ensure_dir_struct('facebook_friend_list')
         TempFileHandler.ensure_dir_struct('facebook_id_resolver')
 
-        # TODO: Setup Logging
+        # PENDENTE: Setup Logging
         self.handle_args()
         self.load_settings()
         self.list_modules()
@@ -63,6 +64,9 @@ class OSIx:
         # Set Initial Data
         self.data['facebook']['primary_target'] = self.args['facebook_target_account']
         self.data['facebook']['current_target'] = self.args['facebook_target_account']
+
+        if not self.config:
+            return -1
 
         # Load Modules
         print('[*] Executing Pipeline:')
@@ -76,22 +80,26 @@ class OSIx:
                 config=self.config,
                 args=self.args,
                 data=self.data
-            )
+                )
 
         # Dump Data into Disk
         TempFileHandler.write_file_text(
             f"execution_{self.args['facebook_target_account']}.json",
             json.dumps(self.data)
-        )
+            )
 
         # Shutdown all Drivers
         ChromeDrivers.shutdown()
 
-    def handle_args(self) -> bool:
+        return 0
+
+    def handle_args(self) -> None:
         """
-        Handle Input Arguments
+        Handle Input Arguments.
+
         :return:
         """
+
         parser = argparse.ArgumentParser(description='Process some integers.')
         parser.add_argument(
             '--facebook_target_account',
@@ -100,14 +108,14 @@ class OSIx:
             dest='facebook_target_account',
             help='Facebook Target Account',
             default=''
-        )
+            )
         parser.add_argument(
             '--facebook_load_friends',
             action='store_true',
             dest='facebook_load_friends',
             help='Allow to Download and Parse the Target Account Friend List.',
             default=False
-        )
+            )
 
         parser.add_argument(
             '--purge_temp_files',
@@ -115,7 +123,7 @@ class OSIx:
             dest='purge_temp_files',
             help='Force Delete All Temporary Files.',
             default=False
-        )
+            )
 
         args = parser.parse_args()
 
@@ -123,22 +131,23 @@ class OSIx:
         self.args['facebook_target_account'] = args.facebook_target_account
         self.args['purge_temp_files'] = args.purge_temp_files
 
-
     def list_modules(self) -> None:
         """
         List All Available Modules.
+
         :return: None
         """
 
         # Check Modules
         print('[*] Installed Modules:')
         for file in os.listdir('modules'):
-            if file != '__init__.py' and file != '__pycache__':
+            if file not in ('__init__.py', '__pycache__'):
                 print(f'\t{file}')
 
     def load_settings(self) -> None:
         """
-        Load the config.ini file into Settings Object
+        Load the config.ini file into Settings Object.
+
         :return: None
         """
 
@@ -149,7 +158,8 @@ class OSIx:
 
     def print_settings(self) -> None:
         """
-        Print all Settings into Console
+        Print all Settings into Console.
+
         :return: None
         """
 

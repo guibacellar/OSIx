@@ -1,18 +1,23 @@
 """Chrome Driver Manager."""
 
 import time
-from selenium import webdriver
+from typing import Optional
+
 from configparser import ConfigParser
+from selenium import webdriver
+from selenium.common.exceptions import WebDriverException
 
 
 class FacebookDriver:
     """Facebook Driver Manager."""
 
     def __init__(self, config: ConfigParser) -> None:
+        """Initialize Module."""
+
         try:
             self.browser = webdriver.Chrome()
             self.login(config)
-        except Exception as ex:
+        except WebDriverException as ex:
             print('[!!!] ERROR - You Probably don\'t Have the Chrome Driver Installed. Please, check https://sites.google.com/a/chromium.org/chromedriver/home to Install.')
             raise ex
 
@@ -25,7 +30,7 @@ class FacebookDriver:
 
         # Start Navigation
         self.browser.maximize_window()
-        self.browser.get(f'https://www.facebook.com/')
+        self.browser.get('https://www.facebook.com/')
 
         # Auto Login
         time.sleep(1)
@@ -48,17 +53,18 @@ class FacebookDriver:
 class ChromeDrivers:
     """Drivers Singleton Managment."""
 
-    __FACEBOOK_DRIVER: FacebookDriver = None
+    __FACEBOOK_DRIVER: Optional[FacebookDriver] = None
 
     @staticmethod
     def shutdown() -> None:
         """Shutdown All Drivers."""
+
         if ChromeDrivers.__FACEBOOK_DRIVER is not None:
             ChromeDrivers.__FACEBOOK_DRIVER.shutdown()
 
     @staticmethod
     def get_fb_webdriver(config: ConfigParser) -> webdriver.Chrome:
-        """Returns the FB WebDriver."""
+        """Return the FB WebDriver."""
 
         if ChromeDrivers.__FACEBOOK_DRIVER is None:
             ChromeDrivers.__FACEBOOK_DRIVER = FacebookDriver(config)

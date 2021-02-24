@@ -12,6 +12,6 @@ class BaseModule:
     def run(self, config: ConfigParser, args: Dict, data: Dict) -> None:
         """
         Base Run Description.
+
         :return: None
         """
-        pass
