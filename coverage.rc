@@ -1,0 +1,7 @@
+[run]
+branch = True
+
+[report]
+omit =
+    *venv*,
+    *.tox*s

@@ -6,3 +6,4 @@ urllib3==1.26.3
 
 # QA
 tox==3.22.0
+pytest==6.2.2
