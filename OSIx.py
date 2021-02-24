@@ -4,6 +4,7 @@ OSIx - Open Source Intelligence eXplorer.
 By: Th3 0bservator
 """
 
+import sys
 import argparse
 import importlib
 import os
@@ -57,6 +58,9 @@ class OSIx:
 
         logger.info(BANNER)
 
+        if not self.check_python_version():
+            return 1
+
         # Ensure Temp Data Structure
         # PENDENTE: Melhorar Isso
         TempFileHandler.ensure_dir_struct('state')
@@ -93,6 +97,22 @@ class OSIx:
         ChromeDrivers.shutdown()
 
         return 0
+
+    def check_python_version(self) -> bool:
+        """Check if the Current Python Version is Supported."""
+
+        # Check Python Requirements
+        major = sys.version_info[0]
+        minor = sys.version_info[1]
+
+        python_version = str(sys.version_info[0]) + "." + str(sys.version_info[1]) + "." + str(sys.version_info[2])
+
+        if major != 3 or major == 3 and minor < 6:
+            logger.fatal('This application requires at least, Python 3.7.6')
+            logger.fatal(f'Current Installed Version is: {python_version}')
+            return False
+
+        return True
 
     def setup_logging(self) -> None:
         """Setup Log Config."""
