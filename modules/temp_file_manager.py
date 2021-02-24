@@ -19,9 +19,12 @@ class TempFileManager(BaseModule):
         if args['purge_temp_files']:
             self.purge_folder('data/temp/facebook_friend_list')
             self.purge_folder('data/temp/facebook_id_resolver')
+            self.purge_folder('data/temp/state')
+
         else:
             self.check_folder_items_age('data/temp/facebook_friend_list', int(config['TEMP_FILES']['facebook_friend_list_age_seconds']))
             self.check_folder_items_age('data/temp/facebook_id_resolver', int(config['TEMP_FILES']['facebook_id_page_age_seconds']))
+            self.check_folder_items_age('data/temp/state', int(config['TEMP_FILES']['state_file_age_seconds']))
 
     def check_folder_items_age(self, path: str, max_age_seconds: int) -> None:
         """
@@ -31,7 +34,7 @@ class TempFileManager(BaseModule):
         :param max_age_seconds: Max Age in Seconds
         :return: None
         """
-        print(f'\t\t[+] Checking Age {path}')
+        print(f'\t\tChecking Age {path}')
         for file in os.scandir(path):
             file_age: int = int(os.stat(file).st_ctime)
 
@@ -46,7 +49,7 @@ class TempFileManager(BaseModule):
         :return:
         """
 
-        print(f'\t\t[+] Purging {path}')
+        print(f'\t\tPurging {path}')
 
         for file in os.scandir(path):
             os.remove(file)

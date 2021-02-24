@@ -6,9 +6,9 @@ By: Th3 0bservator
 
 import argparse
 import importlib
-import json
 import os
 import types
+from uuid import uuid4
 
 from configparser import ConfigParser
 from typing import Dict, List, Optional
@@ -33,6 +33,7 @@ class OSIx:
         self.config: Optional[ConfigParser] = None
         self.available_modules: List[str] = []
         self.args: Dict = {
+            'job_name': '',
             'facebook_get_friends': False,
             'facebook_target_account': '',
             'purge_temp_files': False
@@ -52,6 +53,7 @@ class OSIx:
 
         # Ensure Temp Data Structure
         # PENDENTE: Melhorar Isso
+        TempFileHandler.ensure_dir_struct('state')
         TempFileHandler.ensure_dir_struct('facebook_friend_list')
         TempFileHandler.ensure_dir_struct('facebook_id_resolver')
 
@@ -71,7 +73,7 @@ class OSIx:
         # Load Modules
         print('[*] Executing Pipeline:')
         for pipeline_item in self.config['PIPELINE']['pipeline_sequence'].split('\n'):
-            print(f'\t{pipeline_item}')
+            print(f'\t[+] {pipeline_item}')
             pipeline_item_meta: List[str] = pipeline_item.split('.')
 
             osix_module: types.ModuleType = importlib.import_module(f'modules.{pipeline_item_meta[0]}')
@@ -81,12 +83,6 @@ class OSIx:
                 args=self.args,
                 data=self.data
                 )
-
-        # Dump Data into Disk
-        TempFileHandler.write_file_text(
-            f"execution_{self.args['facebook_target_account']}.json",
-            json.dumps(self.data)
-            )
 
         # Shutdown all Drivers
         ChromeDrivers.shutdown()
@@ -101,6 +97,14 @@ class OSIx:
         """
 
         parser = argparse.ArgumentParser(description='Process some integers.')
+        parser.add_argument(
+            '--job_name',
+            type=str,
+            action='store',
+            dest='job_name',
+            help='Job Name. Used to Save/Restore State File.',
+            default=uuid4().hex.upper()
+            )
         parser.add_argument(
             '--facebook_target_account',
             type=str,
@@ -130,6 +134,7 @@ class OSIx:
         self.args['facebook_get_friends'] = args.facebook_load_friends
         self.args['facebook_target_account'] = args.facebook_target_account
         self.args['purge_temp_files'] = args.purge_temp_files
+        self.args['job_name'] = args.job_name
 
     def list_modules(self) -> None:
         """
