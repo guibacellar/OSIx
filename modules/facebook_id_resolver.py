@@ -7,8 +7,6 @@ from configparser import ConfigParser
 from typing import Dict
 from core.base_module import BaseModule
 from core.temp_file import TempFileHandler
-import re
-import json
 from core.chrome_driver_manager import ChromeDrivers
 
 
@@ -22,6 +20,11 @@ class FacebookIdResolver(BaseModule):
         target_profile: str = data['facebook']['current_target']
         target_file: str = f'facebook_id_resolver/{target_profile}.html'
         page_source: str = ''
+
+        # Module Activation Rule
+        if target_profile is None or target_profile == '':
+            print('\t\tTarget Profile Empty.')
+            return
 
         # Check if Target Profile Alread in Data Struct
         if target_profile not in data['facebook']['profiles']:

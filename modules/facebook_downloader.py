@@ -5,7 +5,6 @@ import time
 from configparser import ConfigParser
 from typing import Dict
 from core.temp_file import TempFileHandler
-from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from core.base_module import BaseModule
 from core.chrome_driver_manager import ChromeDrivers
@@ -20,6 +19,11 @@ class FacebookFriendListDownloader(BaseModule):
         # Get Target
         target_profile: str = data['facebook']['current_target']
         target_file: str = f'facebook_friend_list/{target_profile}.html'
+
+        # Module Activation Rule
+        if target_profile is None or target_profile == '':
+            print('\t\tTarget Profile Empty.')
+            return
 
         # Check if Cacheds File Exists
         if TempFileHandler.file_exist(target_file):

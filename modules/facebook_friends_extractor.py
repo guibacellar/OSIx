@@ -21,6 +21,11 @@ class FacebookFriendListExtractor(BaseModule):
         target_profile: str = data['facebook']['current_target']
         target_file: str = f'facebook_friend_list/{target_profile}.html'
 
+        # Module Activation Rule
+        if target_profile is None or target_profile == '':
+            print('\t\tTarget Profile Empty.')
+            return
+
         # Check if File Exists
         if not TempFileHandler.file_exist(target_file):
             print(f'\t\t Target File "{target_file}" not Exists.')
