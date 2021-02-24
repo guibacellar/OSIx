@@ -27,6 +27,11 @@ class FacebookFriendListExtractor(BaseModule):
     def run(self, config: ConfigParser, args: Dict, data: Dict) -> None:
         """Execute Module."""
 
+        # Check Module Activation
+        if not args['facebook_get_friends']:
+            logger.info("\t\tModule Disabled")
+            return
+
         # Get Target
         target_profile: str = data['facebook']['current_target']
         target_file: str = f'facebook_friend_list/{target_profile}.html'
