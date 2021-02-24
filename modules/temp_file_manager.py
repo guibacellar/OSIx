@@ -23,11 +23,13 @@ class TempFileManager(BaseModule):
         if args['purge_temp_files']:
             self.purge_folder('data/temp/facebook_friend_list')
             self.purge_folder('data/temp/facebook_id_resolver')
+            self.purge_folder('data/temp/instagram_id_resolver')
             self.purge_folder('data/temp/state')
 
         else:
             self.check_folder_items_age('data/temp/facebook_friend_list', int(config['TEMP_FILES']['facebook_friend_list_age_seconds']))
             self.check_folder_items_age('data/temp/facebook_id_resolver', int(config['TEMP_FILES']['facebook_id_page_age_seconds']))
+            self.check_folder_items_age('data/temp/instagram_id_resolver', int(config['TEMP_FILES']['instagram_id_json_age_seconds']))
             self.check_folder_items_age('data/temp/state', int(config['TEMP_FILES']['state_file_age_seconds']))
 
     def check_folder_items_age(self, path: str, max_age_seconds: int) -> None:

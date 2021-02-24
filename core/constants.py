@@ -8,7 +8,21 @@ SINGLE_FB_PROFILE_DATA_ITEM: Dict = {
     'family': []
     }
 
+SINGLE_INSTAGRAM_PROFILE_DATA_ITEM: Dict = {
+    'fullname': '',
+    'profile_pic': '',
+    'id': '',  # Instagram ID
+    'friends': []  # List of SINGLE_INSTAGRAM_FRIEND_DATA_ITEM
+    }
+
 SINGLE_FB_FRIEND_DATA_ITEM: Dict = {
+    'name': '',
+    'id': '',
+    'path': '',
+    'profile_pic': ''
+    }
+
+SINGLE_INSTAGRAM_FRIEND_DATA_ITEM: Dict = {
     'name': '',
     'id': '',
     'path': '',

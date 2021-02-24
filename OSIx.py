@@ -13,12 +13,15 @@ from uuid import uuid4
 import logging
 import logging.config
 
+import random
+
 from configparser import ConfigParser
 from typing import Dict, List, Optional
 
 from core.base_module import BaseModule
 from core.temp_file import TempFileHandler
 from core.chrome_driver_manager import ChromeDrivers
+from core.http_manager import HttpNavigationManager
 
 logger = logging.getLogger()
 
@@ -41,13 +44,22 @@ class OSIx:
             'job_name': '',
             'facebook_get_friends': False,
             'facebook_target_account': '',
-            'purge_temp_files': False
+            'purge_temp_files': False,
+            'instagram_target_account': ''
             }
-        self.data = {
+        self.data: Dict = {
+            'web_navigation': {
+                'user_agent': ''
+                },
             'facebook': {
                 'primary_target': '',
                 'current_target': '',
                 'profiles': {}  # Uses SINGLE_FB_PROFILE_DATA_ITEM
+                },
+            'instagram': {
+                'primary_target': '',
+                'current_target': '',
+                'profiles': {}  # Uses SINGLE_INSTAGRAM_PROFILE_DATA_ITEM
                 }
             }
 
@@ -66,18 +78,25 @@ class OSIx:
         TempFileHandler.ensure_dir_struct('state')
         TempFileHandler.ensure_dir_struct('facebook_friend_list')
         TempFileHandler.ensure_dir_struct('facebook_id_resolver')
+        TempFileHandler.ensure_dir_struct('instagram_id_resolver')
 
         self.handle_args()
         self.load_settings()
         self.list_modules()
         self.print_settings()
 
+        if not self.config:
+            return -1
+
         # Set Initial Data
         self.data['facebook']['primary_target'] = self.args['facebook_target_account']
         self.data['facebook']['current_target'] = self.args['facebook_target_account']
+        self.data['instagram']['primary_target'] = self.args['instagram_target_account']
+        self.data['instagram']['current_target'] = self.args['instagram_target_account']
+        self.data['web_navigation']['user_agent'] = self.choose_ua()
 
-        if not self.config:
-            return -1
+        # Initialize Internal Modules
+        HttpNavigationManager.init(self.data)
 
         # Load Modules
         logger.info('[*] Executing Pipeline:')
@@ -135,6 +154,7 @@ class OSIx:
             help='Job Name. Used to Save/Restore State File.',
             default=uuid4().hex.upper()
             )
+
         parser.add_argument(
             '--facebook_target_account',
             type=str,
@@ -152,6 +172,15 @@ class OSIx:
             )
 
         parser.add_argument(
+            '--instagram_target_account',
+            type=str,
+            action='store',
+            dest='instagram_target_account',
+            help='Instagram Target Account',
+            default=''
+            )
+
+        parser.add_argument(
             '--purge_temp_files',
             action='store_true',
             dest='purge_temp_files',
@@ -164,6 +193,7 @@ class OSIx:
         self.args['facebook_get_friends'] = args.facebook_load_friends
         self.args['facebook_target_account'] = args.facebook_target_account
         self.args['purge_temp_files'] = args.purge_temp_files
+        self.args['instagram_target_account'] = args.instagram_target_account
         self.args['job_name'] = args.job_name
 
     def list_modules(self) -> None:
@@ -200,6 +230,15 @@ class OSIx:
         logger.info('[*] Operation Settings: ')
         for key, value in self.args.items():
             logger.info(f'\t{key} = {value}')
+
+    def choose_ua(self) -> str:
+        """Choose a Random UA."""
+
+        if self.config:
+            ua_list: List[str] = self.config['WEB_NAVIGATION']['useragent_list'].split('\n')
+            return ua_list[random.Random().randint(1, len(ua_list) - 1)]  # nosec
+
+        raise Exception("System Configuration Not Initialized")
 
 
 if __name__ == '__main__':
