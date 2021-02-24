@@ -1,13 +1,17 @@
 """Temporary Files Manager."""
 
-from datetime import datetime
-from configparser import ConfigParser
 import os
+import logging
+
+from configparser import ConfigParser
+from datetime import datetime
 from typing import Dict
 
 import pytz
 
 from core.base_module import BaseModule
+
+logger = logging.getLogger()
 
 
 class TempFileManager(BaseModule):
@@ -34,7 +38,7 @@ class TempFileManager(BaseModule):
         :param max_age_seconds: Max Age in Seconds
         :return: None
         """
-        print(f'\t\tChecking Age {path}')
+        logger.debug(f'\t\tChecking Age {path}')
         for file in os.scandir(path):
             file_age: int = int(os.stat(file).st_ctime)
 
@@ -49,7 +53,7 @@ class TempFileManager(BaseModule):
         :return:
         """
 
-        print(f'\t\tPurging {path}')
+        logger.debug(f'\t\tPurging {path}')
 
         for file in os.scandir(path):
             os.remove(file)

@@ -3,6 +3,8 @@
 from configparser import ConfigParser
 import json
 import re
+import logging
+
 from typing import Dict, Optional
 
 from bs4 import BeautifulSoup, Tag
@@ -10,6 +12,8 @@ from bs4 import BeautifulSoup, Tag
 from core import constants
 from core.base_module import BaseModule
 from core.temp_file import TempFileHandler
+
+logger = logging.getLogger()
 
 
 class FacebookFriendListExtractor(BaseModule):
@@ -29,12 +33,12 @@ class FacebookFriendListExtractor(BaseModule):
 
         # Module Activation Rule
         if target_profile is None or target_profile == '':
-            print('\t\tTarget Profile Empty.')
+            logger.info('\t\tTarget Profile Empty.')
             return
 
         # Check if File Exists
         if not TempFileHandler.file_exist(target_file):
-            print(f'\t\t Target File "{target_file}" not Exists.')
+            logger.info(f'\t\t Target File "{target_file}" not Exists.')
             return
 
         # Check if Target Profile Alread in Data Struct
@@ -60,7 +64,7 @@ class FacebookFriendListExtractor(BaseModule):
             )
 
         total_friends: int = len(data['facebook']['profiles'][target_profile]['friends'])
-        print(f'\t\t[+] Extracted {total_friends} Friends')
+        logger.info(f'\t\tExtracted {total_friends} Friends')
 
     def __process_friends_blocks(self, friends_blocks: Tag, target_profile: str, data: Dict) -> None:
         """

@@ -1,11 +1,15 @@
 """Chrome Driver Manager."""
 
 import time
+import logging
+
 from typing import Optional
 
 from configparser import ConfigParser
 from selenium import webdriver
 from selenium.common.exceptions import WebDriverException
+
+logger = logging.getLogger()
 
 
 class FacebookDriver:
@@ -18,7 +22,7 @@ class FacebookDriver:
             self.browser = webdriver.Chrome()
             self.login(config)
         except WebDriverException as ex:
-            print('[!!!] ERROR - You Probably don\'t Have the Chrome Driver Installed. Please, check https://sites.google.com/a/chromium.org/chromedriver/home to Install.')
+            logger.fatal('[!!!] ERROR - You Probably don\'t Have the Chrome Driver Installed. Please, check https://sites.google.com/a/chromium.org/chromedriver/home to Install.')
             raise ex
 
     def get_browser(self) -> webdriver.Chrome:

@@ -4,8 +4,12 @@ from configparser import ConfigParser
 from typing import Dict
 
 import json
+import logging
+
 from core.base_module import BaseModule
 from core.temp_file import TempFileHandler
+
+logger = logging.getLogger()
 
 
 class LoadStateFileHandler(BaseModule):
@@ -20,7 +24,7 @@ class LoadStateFileHandler(BaseModule):
             data.update(
                 json.loads(''.join(TempFileHandler.read_file_text(state_file_name)))
                 )
-            print("\t\tState File Loaded.")
+            logger.debug("\t\tState File Loaded.")
 
 
 class SaveStateFileHandler(BaseModule):

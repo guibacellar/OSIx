@@ -1,6 +1,8 @@
 """Facebook Downloader Module."""
 
 import time
+import logging
+
 from typing import Dict
 
 from configparser import ConfigParser
@@ -9,6 +11,8 @@ from selenium.webdriver.common.keys import Keys
 from core.base_module import BaseModule
 from core.chrome_driver_manager import ChromeDrivers
 from core.temp_file import TempFileHandler
+
+logger = logging.getLogger()
 
 
 class FacebookFriendListDownloader(BaseModule):
@@ -23,16 +27,16 @@ class FacebookFriendListDownloader(BaseModule):
 
         # Module Activation Rule
         if target_profile is None or target_profile == '':
-            print('\t\tTarget Profile Empty.')
+            logger.info('\t\tTarget Profile Empty.')
             return
 
         # Check if Cacheds File Exists
         if TempFileHandler.file_exist(target_file):
-            print(f'\t\tTarget File "{target_file}" Alread Exists. Skipping...')
+            logger.info(f'\t\tTarget File "{target_file}" Alread Exists. Skipping...')
             return
 
         # Init WebDriver
-        print('\t\tDownloading Friends List: ', end='')
+        logger.info('\t\tDownloading Friends List: ')
         browser = ChromeDrivers.get_fb_webdriver(config)
         browser.maximize_window()
 
@@ -68,5 +72,3 @@ class FacebookFriendListDownloader(BaseModule):
 
         # Extract Friends
         TempFileHandler.write_file_text(target_file, browser.page_source)
-
-        print('OK')

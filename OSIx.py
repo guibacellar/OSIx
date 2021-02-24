@@ -9,6 +9,8 @@ import importlib
 import os
 import types
 from uuid import uuid4
+import logging
+import logging.config
 
 from configparser import ConfigParser
 from typing import Dict, List, Optional
@@ -16,6 +18,8 @@ from typing import Dict, List, Optional
 from core.base_module import BaseModule
 from core.temp_file import TempFileHandler
 from core.chrome_driver_manager import ChromeDrivers
+
+logger = logging.getLogger()
 
 BANNER: str = '''
 OSIx - Open Source Intelligence eXplorer
@@ -49,7 +53,9 @@ class OSIx:
     def main(self) -> int:
         """Application Entrypoint."""
 
-        print(BANNER)
+        self.setup_logging()
+
+        logger.info(BANNER)
 
         # Ensure Temp Data Structure
         # PENDENTE: Melhorar Isso
@@ -57,7 +63,6 @@ class OSIx:
         TempFileHandler.ensure_dir_struct('facebook_friend_list')
         TempFileHandler.ensure_dir_struct('facebook_id_resolver')
 
-        # PENDENTE: Setup Logging
         self.handle_args()
         self.load_settings()
         self.list_modules()
@@ -71,9 +76,9 @@ class OSIx:
             return -1
 
         # Load Modules
-        print('[*] Executing Pipeline:')
+        logger.info('[*] Executing Pipeline:')
         for pipeline_item in self.config['PIPELINE']['pipeline_sequence'].split('\n'):
-            print(f'\t[+] {pipeline_item}')
+            logger.info(f'\t[+] {pipeline_item}')
             pipeline_item_meta: List[str] = pipeline_item.split('.')
 
             osix_module: types.ModuleType = importlib.import_module(f'modules.{pipeline_item_meta[0]}')
@@ -88,6 +93,11 @@ class OSIx:
         ChromeDrivers.shutdown()
 
         return 0
+
+    def setup_logging(self) -> None:
+        """Setup Log Config."""
+
+        logging.config.fileConfig('logging.conf')
 
     def handle_args(self) -> None:
         """
@@ -144,10 +154,10 @@ class OSIx:
         """
 
         # Check Modules
-        print('[*] Installed Modules:')
+        logger.info('[*] Installed Modules:')
         for file in os.listdir('modules'):
             if file not in ('__init__.py', '__pycache__'):
-                print(f'\t{file}')
+                logger.info(f'\t{file}')
 
     def load_settings(self) -> None:
         """
@@ -156,10 +166,9 @@ class OSIx:
         :return: None
         """
 
-        print('[*] Loading Configurations: ', end='')
+        logger.info('[*] Loading Configurations:')
         self.config = ConfigParser()
         self.config.read('config.ini')
-        print('OK')
 
     def print_settings(self) -> None:
         """
@@ -168,9 +177,9 @@ class OSIx:
         :return: None
         """
 
-        print('[*] Operation Settings: ')
+        logger.info('[*] Operation Settings: ')
         for key, value in self.args.items():
-            print(f'\t{key} = {value}')
+            logger.info(f'\t{key} = {value}')
 
 
 if __name__ == '__main__':

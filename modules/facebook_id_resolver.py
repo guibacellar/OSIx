@@ -1,5 +1,7 @@
 """Facebook Friend List Extractor."""
 
+import logging
+
 from configparser import ConfigParser
 from typing import Dict
 
@@ -9,6 +11,8 @@ from core import constants
 from core.base_module import BaseModule
 from core.chrome_driver_manager import ChromeDrivers
 from core.temp_file import TempFileHandler
+
+logger = logging.getLogger()
 
 
 class FacebookIdResolver(BaseModule):
@@ -24,7 +28,7 @@ class FacebookIdResolver(BaseModule):
 
         # Module Activation Rule
         if target_profile is None or target_profile == '':
-            print('\t\tTarget Profile Empty.')
+            logger.info('\t\tTarget Profile Empty.')
             return
 
         # Check if Target Profile Alread in Data Struct
@@ -37,7 +41,7 @@ class FacebookIdResolver(BaseModule):
 
         # Check if Cached File Exists
         if not TempFileHandler.file_exist(target_file):
-            print(f'\t\tDownloading "{target_profile}" for Facebook Id Resolver:', end='')
+            logger.info(f'\t\tDownloading "{target_profile}" for Facebook Id Resolver')
 
             # Init WebDriver
             browser = ChromeDrivers.get_fb_webdriver(config)
@@ -51,7 +55,6 @@ class FacebookIdResolver(BaseModule):
             TempFileHandler.write_file_text(target_file, browser.page_source)
 
             page_source = browser.page_source
-            print('OK')
 
         else:
             page_source = ''.join(TempFileHandler.read_file_text(target_file))
