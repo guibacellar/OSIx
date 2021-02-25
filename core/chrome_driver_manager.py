@@ -3,6 +3,9 @@
 import time
 import logging
 
+from os import path
+from sys import platform
+
 from typing import Optional
 
 from configparser import ConfigParser
@@ -19,7 +22,12 @@ class FacebookDriver:
         """Initialize Module."""
 
         try:
-            self.browser = webdriver.Chrome()
+            executable_path = path.join("assets", 'chromedriver.exe' if platform == 'win32' else 'chromedriver')
+            kwargs = {}
+            if path.exists(executable_path):
+                kwargs['executable_path'] = executable_path
+
+            self.browser = webdriver.Chrome(**kwargs)
             self.login(config)
         except WebDriverException as ex:
             logger.fatal('[!!!] ERROR - You Probably don\'t Have the Chrome Driver Installed. Please, check https://sites.google.com/a/chromium.org/chromedriver/home to Install.')
