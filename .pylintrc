@@ -70,6 +70,7 @@ disable=
     no-self-use,
     too-few-public-methods,
     logging-fstring-interpolation,
+    import-error,
     R0801
 
 # Enable the message, report, category or checker with the given id(s). You can

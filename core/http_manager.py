@@ -32,3 +32,24 @@ class HttpNavigationManager:
             raise Exception("HttpNavigationManager not Initialized.")
 
         return HttpNavigationManager.__INSTANCE.get(uri).text
+
+    @staticmethod
+    def download_file(uri: str, target_path: str) -> None:
+        """
+        Download a Single File from Web.
+
+        :param uri: Source File.
+        :param target_path: Target File.
+        :return:
+        """
+
+        if not HttpNavigationManager.__INSTANCE:
+            raise Exception("HttpNavigationManager not Initialized.")
+
+        with open(target_path, 'wb') as file:
+            file.write(
+                HttpNavigationManager.__INSTANCE.get(uri).content
+                )
+
+            file.flush()
+            file.close()

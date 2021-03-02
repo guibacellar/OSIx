@@ -2,6 +2,10 @@
 data/
 .idea
 .tox
+assets/chrome_driver.zip
+assets/chromedriver.exe
+assets/chromedriver.so
+assets/chromedriver
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

@@ -12,7 +12,8 @@ SINGLE_INSTAGRAM_PROFILE_DATA_ITEM: Dict = {
     'fullname': '',
     'profile_pic': '',
     'id': '',  # Instagram ID
-    'friends': []  # List of SINGLE_INSTAGRAM_FRIEND_DATA_ITEM
+    'followers': [],  # List of SINGLE_INSTAGRAM_FRIEND_DATA_ITEM
+    'following': []  # List of SINGLE_INSTAGRAM_FRIEND_DATA_ITEM
     }
 
 SINGLE_FB_FRIEND_DATA_ITEM: Dict = {
