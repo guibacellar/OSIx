@@ -29,6 +29,13 @@ class InputArgsHandler(BaseModule):
             'action': 'store_true',
             'help': 'Force Delete All Temporary Files',
             'default': False
+            },
+        'btc_wallet': {
+            'param': '--btc_wallet',
+            'type': str,
+            'action': 'store',
+            'help': 'BitCoin Wallet Address',
+            'default': ''
             }
         }
 
