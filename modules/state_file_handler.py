@@ -18,7 +18,7 @@ class LoadStateFileHandler(BaseModule):
     def run(self, config: ConfigParser, args: Dict, data: Dict) -> None:
         """Execute Module."""
 
-        state_file_name: str = f"state/{args['job_name']}.json"
+        state_file_name: str = config['MODULE_LoadStateFileHandler']['file_name'].replace("{0}", args['job_name'])
 
         if TempFileHandler.file_exist(state_file_name):
             data.update(
@@ -33,7 +33,7 @@ class SaveStateFileHandler(BaseModule):
     def run(self, config: ConfigParser, args: Dict, data: Dict) -> None:
         """Execute Module."""
 
-        state_file_name: str = f"state/{args['job_name']}.json"
+        state_file_name: str = config['MODULE_SaveStateFileHandler']['file_name'].replace("{0}", args['job_name'])
 
         TempFileHandler.write_file_text(
             state_file_name,

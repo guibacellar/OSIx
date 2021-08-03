@@ -10,6 +10,7 @@ from typing import Dict
 import pytz
 
 from core.base_module import BaseModule
+from core.temp_file import TempFileHandler
 
 logger = logging.getLogger()
 
@@ -20,19 +21,23 @@ class TempFileManager(BaseModule):
     def run(self, config: ConfigParser, args: Dict, data: Dict) -> None:
         """Execute Module."""
 
+        # Check Folder Structure
+        self.__ensure_folder_structure(config=config)
+
         if args['purge_temp_files']:
-            self.purge_folder('data/temp/facebook_friend_list')
-            self.purge_folder('data/temp/facebook_id_resolver')
-            self.purge_folder('data/temp/instagram_id_resolver')
-            self.purge_folder('data/temp/state')
+            self.__purge_all(config=config)
 
         else:
-            self.check_folder_items_age('data/temp/facebook_friend_list', int(config['TEMP_FILES']['facebook_friend_list_age_seconds']))
-            self.check_folder_items_age('data/temp/facebook_id_resolver', int(config['TEMP_FILES']['facebook_id_page_age_seconds']))
-            self.check_folder_items_age('data/temp/instagram_id_resolver', int(config['TEMP_FILES']['instagram_id_json_age_seconds']))
-            self.check_folder_items_age('data/temp/state', int(config['TEMP_FILES']['state_file_age_seconds']))
+            self.__check_by_age(config=config)
 
-    def check_folder_items_age(self, path: str, max_age_seconds: int) -> None:
+    def __ensure_folder_structure(self, config: ConfigParser) -> None:
+        """Ensure the Folders Structure."""
+
+        for temp_file_info in config['TEMP_FILES']:
+            temp_def: str = config['TEMP_FILES'][temp_file_info]
+            TempFileHandler.ensure_dir_struct(temp_def.split(';')[0])
+
+    def __check_folder_items_age(self, path: str, max_age_seconds: int) -> None:
         """
         Check Folder Items Age.
 
@@ -47,7 +52,7 @@ class TempFileManager(BaseModule):
             if (int(datetime.now(tz=pytz.UTC).timestamp()) - file_age) > max_age_seconds:
                 os.remove(file)
 
-    def purge_folder(self, path: str) -> None:
+    def __purge_folder(self, path: str) -> None:
         """
         Purge a Single Folder.
 
@@ -59,3 +64,19 @@ class TempFileManager(BaseModule):
 
         for file in os.scandir(path):
             os.remove(file)
+
+    def __purge_all(self, config: ConfigParser) -> None:
+        """Purge all Folders."""
+
+        for temp_file_info in config['TEMP_FILES']:
+            temp_def: str = config['TEMP_FILES'][temp_file_info]
+            self.__purge_folder(temp_def.split(';')[0])
+
+    def __check_by_age(self, config: ConfigParser) -> None:
+        """Check Folders file By Age."""
+
+        for temp_file_info in config['TEMP_FILES']:
+            temp_def: str = config['TEMP_FILES'][temp_file_info]
+            folder_name: str = temp_def.split(';')[0]
+            age: int = int(temp_def.split(';')[1])
+            self.__check_folder_items_age(f'data/temp/{folder_name}', age)

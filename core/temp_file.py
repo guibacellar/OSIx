@@ -15,6 +15,9 @@ class TempFileHandler:
         :param path:
         :return:
         """
+        if not os.path.exists('data/temp/'):
+            os.mkdir('data/temp/')
+
         if not os.path.exists(f'data/temp/{path}'):
             os.mkdir(f'data/temp/{path}')
 
