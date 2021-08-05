@@ -15,6 +15,24 @@ Created using a Modular Architecture, the OSIx easily allow to add new modules t
 
 # Download
 
+## Release
+```bash
+wget https://github.com/guibacellar/OSIx/archive/master.zip
+unzip -o master.zip
+mv OSIx-master/ OSIx
+pip3 install -r OSIx/requirements.txt
+rm -rf master.zip
+```
+
+## Develop
+```bash
+wget https://github.com/guibacellar/OSIx/archive/develop.zip
+unzip -o develop.zip
+mv OSIx-develop/ OSIx
+pip3 install -r OSIx/requirements.txt
+rm -rf develop.zip
+```
+
 ---
 
 # Available Modules
