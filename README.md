@@ -1,7 +1,7 @@
-# OSIx
+# OSIx - 0.0.1
 Open Source Intelligence eXplorer
 
-By: Th3 0bservator
+**By:** Th3 0bservator
 
 ----
 
@@ -9,7 +9,16 @@ OSIx is a Python tool to Explore the Open Source Intelligence Data.
 
 Created using a Modular Architecture, the OSIx easily allow to add new modules to enrich the available functionalities.
 
-> Compatible with Python 3.7.6+
+# Requirements
+ 
+ * Python 3.7.6+
+ * Windows, Linux or Mac OS
+
+# Roadmap
+
+ * Username Search
+ * Email Search
+ * Social Network Account Search
 
 ----
 

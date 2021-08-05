@@ -46,6 +46,7 @@ class OSIx:
         if not self.check_python_version():
             return 1
 
+        DirectoryManagerUtils.ensure_dir_struct('data/')
         DirectoryManagerUtils.ensure_dir_struct('data/temp/')
         DirectoryManagerUtils.ensure_dir_struct('data/export/')
         self.__load_settings()
