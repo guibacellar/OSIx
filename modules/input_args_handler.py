@@ -36,6 +36,27 @@ class InputArgsHandler(BaseModule):
             'action': 'store',
             'help': 'BitCoin Wallet Address',
             'default': ''
+            },
+        'btc_get_transactions': {
+            'param': '--btc_get_transactions',
+            'type': str,
+            'action': 'store_true',
+            'help': 'Allow to Download All BitCoin Transactions from Wallet',
+            'default': ''
+            },
+        'export_btc_transactions_as_graphml': {
+            'param': '--export_btc_transactions_as_graphml',
+            'type': str,
+            'action': 'store_true',
+            'help': 'Allow to Export the BitCoin Transactions as GraphML',
+            'default': False
+            },
+        'export_btc_transactions_as_gephi': {
+            'param': '--export_btc_transactions_as_gephi',
+            'type': str,
+            'action': 'store_true',
+            'help': 'Allow to Export the BitCoin Transactions as Gephi File',
+            'default': True
             }
         }
 

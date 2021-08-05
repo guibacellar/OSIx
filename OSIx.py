@@ -16,6 +16,7 @@ from typing import Dict, List, Optional
 
 from core.base_module import BaseModule
 from core.chrome_driver_manager import ChromeDrivers
+from core.dir_manager import DirectoryManagerUtils
 
 logger = logging.getLogger()
 
@@ -45,6 +46,8 @@ class OSIx:
         if not self.check_python_version():
             return 1
 
+        DirectoryManagerUtils.ensure_dir_struct('data/temp/')
+        DirectoryManagerUtils.ensure_dir_struct('data/export/')
         self.__load_settings()
         self.__list_modules()
 

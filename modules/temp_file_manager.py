@@ -45,7 +45,7 @@ class TempFileManager(BaseModule):
         :param max_age_seconds: Max Age in Seconds
         :return: None
         """
-        logger.debug(f'\t\tChecking Age {path}')
+        logger.debug(f'\t\tChecking Age {path} for {max_age_seconds} seconds')
         for file in os.scandir(path):
             file_age: int = int(os.stat(file).st_ctime)
 
