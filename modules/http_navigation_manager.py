@@ -21,9 +21,7 @@ class HttpNavigationManagerHandler(BaseModule):
 
         # Check if Not have a Selected UA
         if 'web_navigation' not in data or 'user_agent' not in data['web_navigation']:
-            data.update(
-                {'web_navigation': {'user_agent': self.__choose_ua(config)}}
-                )
+            data.update({'web_navigation': {'user_agent': self.__choose_ua(config)}})
 
         # Initialize Internal Modules
         HttpNavigationManager.init(data)

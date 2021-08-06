@@ -1,13 +1,15 @@
-# OSIx - 0.0.1
+# OSIx - 0.0.2
 Open Source Intelligence eXplorer
 
 **By:** Th3 0bservator
 
+**Repo:** [https://github.com/guibacellar/OSIx](https://github.com/guibacellar/OSIx)
+
 ----
 
-OSIx is a Python tool to Explore the Open Source Intelligence Data. 
+OSIx is a Python tool to Explore the Open Source Intelligence Data, created to help Researchers, Investigators and Law Enforcement Agents to Collect and Process OSINT Data.
 
-Created using a Modular Architecture, the OSIx easily allow to add new modules to enrich the available functionalities.
+Created using a Modular Architecture, the OSIx easily allows to add new modules to enrich the available functionalities.
 
 # Requirements
  
