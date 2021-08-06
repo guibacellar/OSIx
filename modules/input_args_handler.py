@@ -75,26 +75,26 @@ class InputArgsHandler(BaseModule):
             'help': 'Allow the Executor to Scan the NSFW WebSites',
             'default': False
             },
-            'username_print_result': {
+        'username_print_result': {
             'param': '--username_print_result',
             'type': str,
             'action': 'store_true',
             'help': 'Allow to Print the Result in sysout',
             'default': True
             },
-            'username_show_all': {
-                'param': '--username_show_all',
-                'type': str,
-                'action': 'store_true',
-                'help': 'Allow to Print all Results, otherwise, Print Only the Founded Ones.',
-                'default': False
+        'username_show_all': {
+            'param': '--username_show_all',
+            'type': str,
+            'action': 'store_true',
+            'help': 'Allow to Print all Results, otherwise, Print Only the Founded Ones.',
+            'default': False
             },
-           'username_enable_dump_file': {
-                'param': '--username_enable_dump_file',
-                'type': str,
-                'action': 'store_true',
-                'help': 'Allow to Dump a Result file into data/export Folder.',
-                'default': False
+        'username_enable_dump_file': {
+            'param': '--username_enable_dump_file',
+            'type': str,
+            'action': 'store_true',
+            'help': 'Allow to Dump a Result file into data/export Folder.',
+            'default': False
             },
         }
 

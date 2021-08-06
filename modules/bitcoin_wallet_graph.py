@@ -3,16 +3,14 @@
 from configparser import ConfigParser
 from typing import Dict, List
 
-
-import logging
-import requests
-import time
 import json
+import logging
+import time
+
+import networkx as nx
 
 from core.base_module import BaseModule
 from core.temp_file import TempFileHandler
-import networkx as nx
-import time
 
 logger = logging.getLogger()
 
@@ -39,6 +37,23 @@ class BitcoinWalletGraphGenerator(BaseModule):
 
         # Load File
         json_data: Dict = json.loads(''.join(TempFileHandler.read_file_text(target_file)))
+
+        # Execute Module
+        self.__execute(
+            target_wallet=target_wallet,
+            json_data=json_data,
+            args=args
+            )
+
+    def __execute(self, target_wallet: str, json_data: Dict, args: Dict) -> None:
+        """
+        Execute the Graph Engine.
+
+        :param target_wallet:
+        :param target_file:
+        :param json_data:
+        :return:
+        """
 
         # Initialize Graph Engine
         all_graph: nx.Graph = nx.DiGraph()
@@ -71,18 +86,18 @@ class BitcoinWalletGraphGenerator(BaseModule):
         # Process Input Nodes
         for in_node in all_input_nodes:
             all_graph.add_node(in_node)
-            all_graph.add_edge(in_node, target_wallet, key=int(time.clock()*1000000))
+            all_graph.add_edge(in_node, target_wallet, key=int(time.clock() * 1000000))
 
             in_graph.add_node(in_node)
-            in_graph.add_edge(in_node, target_wallet, key=int(time.clock()*1000000))
+            in_graph.add_edge(in_node, target_wallet, key=int(time.clock() * 1000000))
 
         # Process Output Nodes
         for out_node in all_output_nodes:
             all_graph.add_node(out_node)
-            all_graph.add_edge(target_wallet, out_node, key=int(time.clock()*1000000))
+            all_graph.add_edge(target_wallet, out_node, key=int(time.clock() * 1000000))
 
             out_graph.add_node(out_node)
-            out_graph.add_edge(target_wallet, out_node, key=int(time.clock()*1000000))
+            out_graph.add_edge(target_wallet, out_node, key=int(time.clock() * 1000000))
 
         # Set Node Properties
         if args['export_btc_transactions_as_gephi']:
@@ -92,7 +107,7 @@ class BitcoinWalletGraphGenerator(BaseModule):
 
             nx.readwrite.write_gexf(all_graph, f'data/export/btc_wallet_all_{target_wallet}.gexf')
             nx.readwrite.write_gexf(out_graph, f'data/export/btc_wallet_outputs_{target_wallet}.gexf')
-            nx.readwrite.write_gexf (in_graph, f'data/export/btc_wallet_inputs_{target_wallet}.gexf')
+            nx.readwrite.write_gexf(in_graph, f'data/export/btc_wallet_inputs_{target_wallet}.gexf')
 
         elif args['export_btc_transactions_as_graphml']:
             nx.readwrite.write_graphml_xml(all_graph, f'data/export/btc_wallet_all_{target_wallet}.graphml')
@@ -101,4 +116,3 @@ class BitcoinWalletGraphGenerator(BaseModule):
 
         # Log
         logger.info('\t\t3 Exported Files at data/export')
-

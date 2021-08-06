@@ -1,13 +1,13 @@
 """Username Scanner - Based on https://github.com/sherlock-project."""
-import csv
 import json
 from configparser import ConfigParser
-from typing import Dict, Optional
+from typing import Dict, List, Optional, Tuple, Union
 from time import monotonic
+
 import logging
 import re
 import requests
-from enum import Enum
+
 from urllib3.exceptions import InsecureRequestWarning
 from requests_futures.sessions import FuturesSession
 from core.base_module import BaseModule
@@ -22,7 +22,7 @@ class UsernameScanner(BaseModule):
     """Username Handler."""
 
     QS_CLAIMED = "Claimed"   # Username Detected
-    QS_AVAILABLE = "Available" # Username Not Detected
+    QS_AVAILABLE = "Available"  # Username Not Detected
     QS_UNKNOWN = "Unknown"   # Error Occurred While Trying To Detect Username
     QS_ILLEGAL = "Illegal"   # Username Not Allowable For This Site
 
@@ -33,17 +33,13 @@ class UsernameScanner(BaseModule):
         requests.packages.urllib3.disable_warnings(category=InsecureRequestWarning)  # type: ignore
 
         if 'username' not in data:
-            data.update({
-                'username': {
-                    'target_username': ''
-                }
-            })
+            data.update({'username': {'target_username': ''}})
 
         target_username: str = data['username']['target_username']
 
         if target_username == '':
             if args['username'] == '':
-                logger.info(f'\t\tUsername Not Provided. Skipping...')
+                logger.info('\t\tUsername Not Provided. Skipping...')
                 return
 
             target_username = args['username']
@@ -54,7 +50,7 @@ class UsernameScanner(BaseModule):
 
         # Check for NSFW Sites
         if args['username_allow_nsfw_scan']:
-            logger.info(f'\t\tNSFW Sites Allowed.')
+            logger.info('\t\tNSFW Sites Allowed.')
             targets.update(json.loads(''.join(ResourcesFileHandler.read_file_text('username_scanner_targets_nsfw.json'))))
 
         # Scan
@@ -67,7 +63,7 @@ class UsernameScanner(BaseModule):
                 target_sites=targets,
                 config=config,
                 args=args
-            )
+                )
             TempFileHandler.write_file_text(target_file, json.dumps(h_result))
         else:
             logger.info(f'\t\tTarget File "{target_file}". Loading...')
@@ -77,8 +73,8 @@ class UsernameScanner(BaseModule):
         if args['username_enable_dump_file']:
             dump_file_content: str = 'site,url'
 
-            for key, value in h_result.items():  # type: ignore
-                if value['status']['status'] == UsernameScanner.QS_CLAIMED:
+            for _key, value in h_result.items():  # type: ignore
+                if 'status' in value and value['status']['status'] == UsernameScanner.QS_CLAIMED:
                     dump_file_content += f'\n"{value["status"]["site_name"]}","{value["status"]["site_url_user"]}"'
 
             with open(f'data/export/username_{target_username}.csv', 'w', encoding='utf-8') as file:
@@ -95,24 +91,195 @@ class UsernameScanner(BaseModule):
         :return:
         """
 
-        # Normal requests
-        underlying_session = requests.session()
-        underlying_session.verify = False
-        underlying_request = requests.Request()
-
-        # Limit number of workers to 20.
-        if len(target_sites) >= 20:
-            max_workers = 20
-        else:
-            max_workers = len(target_sites)
-
-        logger.info(f'\t\tStarting Scan with {max_workers} Workers.')
-
         # Create multi-threaded session for all requests.
-        session = SherlockFuturesSession(
-            max_workers=max_workers,
-            session=underlying_session
+        session: FuturesSession = self.__create_session(target_sites=target_sites)
+
+        # Results from analysis of all sites
+        results_total: Dict = self.__create_futures(
+            target_username=target_username,
+            target_sites=target_sites,
+            config=config,
+            session=session
             )
+
+        # Parse the Results
+        self.__parse_data(
+            target_username=target_username,
+            target_sites=target_sites,
+            results_total=results_total,
+            args=args
+            )
+
+        return results_total
+
+    def __parse_data(self, target_username: str, target_sites: Dict, results_total: Dict, args: Dict) -> None:  # pylint: disable=R0914
+        """
+        Download and Parse WebSites Data.
+
+        :param target_username:
+        :param target_sites:
+        :param results_total:
+        :param args:
+        :return:
+        """
+
+        # Open the file containing account links
+        # Core logic: If tor requests, make them here. If multi-threaded requests, wait for responses
+        for social_network, net_info in target_sites.items():
+
+            # Retrieve results again
+            results_site: Dict = results_total[social_network]
+
+            # Retrieve other site information again
+            url: str = results_site['url_user']
+            status: Optional[str] = results_site['status'] if 'status' in results_site else None
+            if status is not None:
+                # We have already determined the user doesn't exist here
+                continue
+
+            # Get the expected error type
+            error_type: str = net_info["errorType"]
+
+            # Retrieve future and ensure it has finished
+            future = net_info["request_future"]
+            request_future, error_text, _expection_text = self.__get_response(
+                request_future=future
+                )
+
+            if request_future is None:
+                continue
+
+            # Get response time for response of our request.
+            response_time: float = float(request_future.elapsed) if request_future is not None else -1.0   # type: ignore
+            http_status: int = request_future.status_code if request_future is not None else 0
+            response_text: str = request_future.text if request_future is not None else ""
+
+            if error_text is not None and error_text != '':
+                result = self.__build(
+                    target_username,
+                    social_network,
+                    url,
+                    UsernameScanner.QS_UNKNOWN,
+                    query_time=response_time,
+                    context=error_text
+                    )
+
+            elif error_type == "message":
+                result = self.__parse_single_message(net_info, request_future, response_time, social_network, target_username, url)
+
+            elif error_type == "status_code":
+                result = self.__parse_by_status_code(request_future, response_time, social_network, target_username, url)
+
+            elif error_type == "response_url":
+                result = self.__parse_by_url(request_future, response_time, social_network, target_username, url)
+
+            else:
+                # It should be impossible to ever get here...
+                raise ValueError(f"Unknown Error Type '{error_type}' for "
+                                 f"site '{social_network}'")
+
+            # Save status of request
+            results_site['status'] = result
+
+            # Save results from request
+            results_site['http_status'] = http_status
+
+            try:
+                results_site['response_text'] = response_text
+            except:  # pylint: disable=W0702 # noqa: B001, E722, D901
+                results_site['response_text'] = ''
+
+            # Add this site's results into final dictionary with all of the other results.
+            results_total[social_network] = results_site
+
+            if args['username_print_result']:
+                if args['username_show_all'] or (not args['username_show_all'] and result['status'] == UsernameScanner.QS_CLAIMED):
+                    logger.info(f'\t\t{social_network}: {result["status"]} > {result["site_url_user"]}')
+
+    def __parse_by_url(self, request_future: requests.Response, response_time: float, social_network: str, target_username: str, url: str) -> Dict:  # pylint: disable=R0913
+        """Parse the Result by URL."""
+
+        # For this detection method, we have turned off the redirect.
+        # So, there is no need to check the response URL: it will always
+        # match the request.  Instead, we will ensure that the response
+        # code indicates that the request was successful (i.e. no 404, or
+        # forward to some odd redirect).
+        if 200 <= request_future.status_code < 300:
+            return self.__build(target_username,
+                                social_network,
+                                url,
+                                UsernameScanner.QS_CLAIMED,
+                                query_time=response_time
+                                )
+
+        return self.__build(target_username,
+                            social_network,
+                            url,
+                            UsernameScanner.QS_AVAILABLE,
+                            query_time=response_time
+                            )
+
+    def __parse_by_status_code(self, request_future: requests.Response, response_time: float, social_network: str, target_username: str, url: str) -> Dict:  # pylint: disable=R0913
+        """Parse the Result by Status Code."""
+
+        # Checks if the status code of the response is 2XX
+        if not request_future.status_code >= 300 or request_future.status_code < 200:
+            return self.__build(target_username,
+                                social_network,
+                                url,
+                                UsernameScanner.QS_CLAIMED,
+                                query_time=response_time
+                                )
+
+        return self.__build(target_username,
+                            social_network,
+                            url,
+                            UsernameScanner.QS_AVAILABLE,
+                            query_time=response_time
+                            )
+
+    def __parse_single_message(self, net_info: Dict, request_future: requests.Response, response_time: float, social_network: str, target_username: str, url: str) -> Dict:  # pylint: disable=R0913
+        """Parse the Result by Message."""
+
+        # error_flag True denotes no error fo
+        # und in the HTML
+        # error_flag False denotes error found in the HTML
+        error_flag = True
+        errors: Union[str, List] = net_info['errorMsg']
+        # errors will hold the error message
+        # it can be string or list
+        # by insinstance method we can detect that
+        # and handle the case for strings as normal procedure
+        # and if its list we can iterate the errors
+        if isinstance(errors, str):
+            # Checks if the error message is in the HTML
+            # if error is present we will set flag to False
+            if errors in request_future.text:
+                error_flag = False
+        else:
+            # If it's list, it will iterate all the error message
+            for error in errors:
+                if error in request_future.text:
+                    error_flag = False
+                    break
+
+        if error_flag:
+            return self.__build(target_username,
+                                social_network,
+                                url,
+                                UsernameScanner.QS_CLAIMED,
+                                query_time=response_time
+                                )
+
+        return self.__build(target_username,
+                            social_network,
+                            url,
+                            UsernameScanner.QS_AVAILABLE,
+                            query_time=response_time
+                            )
+
+    def __create_futures(self, target_username: str, target_sites: Dict, config: ConfigParser, session: FuturesSession) -> Dict:
+        """Create the Request Futures."""
 
         # Results from analysis of all sites
         results_total: Dict = {}
@@ -130,7 +297,7 @@ class UsernameScanner(BaseModule):
             # information since they think that we are bots (Which we actually are...)
             headers = {
                 'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:55.0) Gecko/20100101 Firefox/55.0',
-            }
+                }
 
             if "headers" in net_info:
                 # Override/append any extra headers required by a given site.
@@ -163,8 +330,7 @@ class UsernameScanner(BaseModule):
                     # from where the user profile normally can be found.
                     url_probe = url_probe.format(target_username)
 
-                if (net_info["errorType"] == 'status_code' and
-                    net_info.get("request_head_only", True) == True):
+                if (net_info["errorType"] == 'status_code' and net_info.get("request_head_only", True)):
                     # In most cases when we are detecting by status code,
                     # it is not necessary to get the entire body:  we can
                     # detect fine with just the HEAD response.
@@ -197,157 +363,41 @@ class UsernameScanner(BaseModule):
             # Add this site's results into final dictionary with all of the other results.
             results_total[social_network] = results_site
 
-        # Open the file containing account links
-        # Core logic: If tor requests, make them here. If multi-threaded requests, wait for responses
-        for social_network, net_info in target_sites.items():
-
-            # Retrieve results again
-            results_site = results_total.get(social_network)
-
-            # Retrieve other site information again
-            url = results_site.get("url_user")
-            status = results_site.get("status")
-            if status is not None:
-                # We have already determined the user doesn't exist here
-                continue
-
-            # Get the expected error type
-            error_type: str = net_info["errorType"]
-
-            # Retrieve future and ensure it has finished
-            future = net_info["request_future"]
-            r, error_text, expection_text = self.__get_response(
-                request_future=future,
-                error_type=error_type,
-                social_network=social_network
-                )
-
-            # Get response time for response of our request.
-            try:
-                response_time = r.elapsed
-            except AttributeError:
-                response_time = None
-
-            # Attempt to get request information
-            try:
-                http_status = r.status_code
-            except:
-                http_status = "?"
-            try:
-                response_text = r.text.encode(r.encoding)
-            except:
-                response_text = ""
-
-            if error_text is not None:
-                result = self.__build(target_username,
-                                      social_network,
-                                      url,
-                                      UsernameScanner.QS_UNKNOWN,
-                                      query_time=response_time,
-                                      context=error_text)
-
-            elif error_type == "message":
-                # error_flag True denotes no error found in the HTML
-                # error_flag False denotes error found in the HTML
-                error_flag = True
-                errors=net_info.get("errorMsg")
-                # errors will hold the error message
-                # it can be string or list
-                # by insinstance method we can detect that
-                # and handle the case for strings as normal procedure
-                # and if its list we can iterate the errors
-                if isinstance(errors,str):
-                    # Checks if the error message is in the HTML
-                    # if error is present we will set flag to False
-                    if errors in r.text:
-                        error_flag = False
-                else:
-                    # If it's list, it will iterate all the error message
-                    for error in errors:
-                        if error in r.text:
-                            error_flag = False
-                            break
-                if error_flag:
-                    result = self.__build(target_username,
-                                          social_network,
-                                          url,
-                                          UsernameScanner.QS_CLAIMED,
-                                          query_time=response_time)
-                else:
-                    result = self.__build(target_username,
-                                          social_network,
-                                          url,
-                                          UsernameScanner.QS_AVAILABLE,
-                                          query_time=response_time)
-            elif error_type == "status_code":
-                # Checks if the status code of the response is 2XX
-                if not r.status_code >= 300 or r.status_code < 200:
-                    result = self.__build(target_username,
-                                          social_network,
-                                          url,
-                                          UsernameScanner.QS_CLAIMED,
-                                          query_time=response_time)
-                else:
-                    result = self.__build(target_username,
-                                          social_network,
-                                          url,
-                                          UsernameScanner.QS_AVAILABLE,
-                                          query_time=response_time)
-            elif error_type == "response_url":
-                # For this detection method, we have turned off the redirect.
-                # So, there is no need to check the response URL: it will always
-                # match the request.  Instead, we will ensure that the response
-                # code indicates that the request was successful (i.e. no 404, or
-                # forward to some odd redirect).
-                if 200 <= r.status_code < 300:
-                    result = self.__build(target_username,
-                                          social_network,
-                                          url,
-                                          UsernameScanner.QS_CLAIMED,
-                                          query_time=response_time)
-                else:
-                    result = self.__build(target_username,
-                                          social_network,
-                                          url,
-                                          UsernameScanner.QS_AVAILABLE,
-                                          query_time=response_time)
-            else:
-                # It should be impossible to ever get here...
-                raise ValueError(f"Unknown Error Type '{error_type}' for "
-                                 f"site '{social_network}'")
-
-            # Save status of request
-            results_site['status'] = result
-
-            # Save results from request
-            results_site['http_status'] = http_status
-
-            try:
-                results_site['response_text'] = response_text.decode('utf-8')
-            except:
-                results_site['response_text'] = ''
-
-            # Add this site's results into final dictionary with all of the other results.
-            results_total[social_network] = results_site
-
-            if args['username_print_result']:
-                if args['username_show_all'] or (not args['username_show_all'] and result['status'] == UsernameScanner.QS_CLAIMED):
-                    logger.info(f'\t\t{social_network}: {result["status"]} > {result["site_url_user"]}')
-
         return results_total
 
-    def __get_response(self, request_future: FuturesSession, error_type: str, social_network: str) -> (Optional[requests.Response], Optional[str], Optional[str]):
+    def __create_session(self, target_sites: Dict) -> FuturesSession:
+        """Create the HTTP Session."""
+
+        # Normal requests
+        underlying_session = requests.session()
+        underlying_session.verify = False
+
+        # Limit number of workers to 20.
+        if len(target_sites) >= 20:
+            max_workers = 20
+        else:
+            max_workers = len(target_sites)
+
+        logger.info(f'\t\tStarting Scan with {max_workers} Workers.')
+
+        # Create multi-threaded session for all requests.
+        return SherlockFuturesSession(
+            max_workers=max_workers,
+            session=underlying_session
+            )
+
+    def __get_response(self, request_future: FuturesSession) -> Tuple[Optional[requests.Response], str, str]:
 
         # Default for Response object if some failure occurs.
         response: Optional[requests.Response] = None
 
-        error_context: Optional[str] = "General Unknown Error"
-        expected_text: Optional[str] = None
+        error_context: str = 'General Unknown Error'
+        expected_text: str = ''
 
         try:
             response = request_future.result()
             if response is not None and response.status_code:
-                error_context = None
+                error_context = ''
 
         except requests.exceptions.HTTPError as errh:
             error_context = "HTTP Error"
@@ -371,10 +421,10 @@ class UsernameScanner(BaseModule):
 
         return response, error_context, expected_text
 
-    def __build(self, username: str, site_name: str, site_url_user: str, status: str, query_time: int = None, context: str = None) -> Dict:
-
+    def __build(self, username: str, site_name: str, site_url_user: str, status: str, query_time: Optional[float] = None, context: str = None) -> Dict:  # pylint: disable=R0913
         """
         Create Query Result Object.
+
         Contains information about a specific method of detecting usernames on
         a given type of web sites.
 
@@ -394,42 +444,38 @@ class UsernameScanner(BaseModule):
             'status': status,
             'query_time': query_time,
             'context': context
-        }
+            }
 
 
 class SherlockFuturesSession(FuturesSession):  # type: ignore
-    def request(self, method, url, hooks={}, *args, **kwargs):  # type: ignore
-        """Request URL.
+    """Sherlock Future Session."""
+
+    def request(self, method, url, hooks={}, *args, **kwargs):  # type: ignore # pylint: disable=R0913, W1113, W0102 # noqa: B006
+        """
+        Request.
+
         This extends the FuturesSession request method to calculate a response
         time metric to each request.
         It is taken (almost) directly from the following StackOverflow answer:
         https://github.com/ross/requests-futures#working-in-the-background
-        Keyword Arguments:
-        self                   -- This object.
-        method                 -- String containing method desired for request.
-        url                    -- String containing URL for request.
-        hooks                  -- Dictionary containing hooks to execute after
-                                  request finishes.
-        args                   -- Arguments.
-        kwargs                 -- Keyword arguments.
-        Return Value:
-        Request object.
+
+        :param method: String containing method desired for request.
+        :param url: String containing URL for request.
+        :param hooks: Dictionary containing hooks to execute after request finishes.
+        :param args: Arguments.
+        :param kwargs: Keyword arguments.
+        :return:
         """
+
         # Record the start time for the request.
         start = monotonic()
 
-        def response_time(resp, *args, **kwargs):  # type: ignore
-            """Response Time Hook.
-            Keyword Arguments:
-            resp                   -- Response object.
-            args                   -- Arguments.
-            kwargs                 -- Keyword arguments.
-            Return Value:
-            N/A
-            """
+        def response_time(resp, *args, **kwargs):  # type: ignore # pylint:disable=W0613
+            """Response Time Hook."""
+
             resp.elapsed = monotonic() - start
 
-            return
+            return resp
 
         # Install hook to execute when response completes.
         # Make sure that the time measurement hook is first, so we will not
@@ -449,7 +495,4 @@ class SherlockFuturesSession(FuturesSession):  # type: ignore
             # No response hook was already defined, so install it ourselves.
             hooks['response'] = [response_time]
 
-        return super(SherlockFuturesSession, self).request(method,
-                                                           url,
-                                                           hooks=hooks,
-                                                           *args, **kwargs)
+        return super(SherlockFuturesSession, self).request(method, url, hooks=hooks, *args, **kwargs)  # pylint: disable=R1725

@@ -33,6 +33,7 @@ TBD
 # Available Modules
 
  * [Bitcoin Wallet Info & Transactions](docs/module_btc_waller.md)
+ * Username Search (TBD Documentation)
 ---
 
 # Basic Command Line

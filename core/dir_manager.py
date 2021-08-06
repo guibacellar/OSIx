@@ -1,7 +1,6 @@
 """Directory Manager."""
 
 import os
-from typing import List
 
 
 class DirectoryManagerUtils:

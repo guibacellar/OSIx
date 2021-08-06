@@ -3,11 +3,11 @@
 from configparser import ConfigParser
 from typing import Dict
 
-
-import logging
-import requests
-import time
 import json
+import logging
+import time
+
+import requests
 
 from core.base_module import BaseModule
 from core.temp_file import TempFileHandler
@@ -48,8 +48,7 @@ class BitcoinWalletInfoDownloader(BaseModule):
 
         # Download Wallet Data
         response: requests.Response = requests.get(
-            url=config['MODULE_BitcoinWalletInfoDownloader']['wallet_info_api']
-                    .replace('{0}', target_wallet)
+            url=config['MODULE_BitcoinWalletInfoDownloader']['wallet_info_api'].replace('{0}', target_wallet)
             )
 
         # Check Result
@@ -88,16 +87,17 @@ class BitcoinWalletTransactionsDownloader(BaseModule):
 
         h_data: Dict = {
             'transactions': []
-        }
+            }
+
         offset: int = 1
         while offset > 0:
 
             # Download Wallet Data
             response: requests.Response = requests.get(
                 url=config['MODULE_BitcoinWalletInfoDownloader']['wallet_transactions_api']
-                        .replace('{0}', target_wallet)
-                        .replace('{1}', str(offset))
-            )
+                .replace('{0}', target_wallet)
+                .replace('{1}', str(offset))
+                )
 
             # Check Result
             if response.status_code == 200:

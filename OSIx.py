@@ -61,7 +61,7 @@ class OSIx:
         logger.info('[*] Executing Pipeline:')
         for pipeline_item in self.config['PIPELINE']['pipeline_sequence'].split('\n'):
 
-            if pipeline_item is '':
+            if pipeline_item == '':
                 continue
 
             logger.info(f'\t[+] {pipeline_item}')
