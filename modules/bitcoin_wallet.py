@@ -53,9 +53,9 @@ class BitcoinWalletInfoDownloader(BaseModule):
 
         # Check Result
         if response.status_code == 200:
+
             # Save temp File
-            if TempFileHandler.write_file_text(target_file, response.content.decode('utf-8')):
-                return
+            TempFileHandler.write_file_text(target_file, response.content.decode('utf-8'))
 
         else:
             logger.error(response.status_code)
@@ -72,7 +72,7 @@ class BitcoinWalletTransactionsDownloader(BaseModule):
 
         # Module Activation Rule
         if not args['btc_get_transactions']:
-            pass
+            return
 
         if target_wallet is None or target_wallet == '':
             logger.info('\t\tTarget BTC Wallet Empty.')
@@ -89,8 +89,8 @@ class BitcoinWalletTransactionsDownloader(BaseModule):
             'transactions': []
             }
 
-        offset: int = 1
-        while offset > 0:
+        offset: int = 0
+        while offset >= 0:
 
             # Download Wallet Data
             response: requests.Response = requests.get(
@@ -106,12 +106,13 @@ class BitcoinWalletTransactionsDownloader(BaseModule):
                 # Update Page Indicator
                 if len(downloaded_data['txs']) == 1000:
                     offset += 1000
+                    time.sleep(10)
+
                 else:
                     offset = -1
 
                 h_data['transactions'] += downloaded_data['txs']
 
-                time.sleep(10)
             else:
                 logger.error(response.status_code)
                 return

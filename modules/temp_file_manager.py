@@ -62,8 +62,8 @@ class TempFileManager(BaseModule):
 
         logger.debug(f'\t\tPurging {path}')
 
-        for file in os.scandir(path):
-            os.remove(file)
+        for file in os.scandir(f'data/temp/{path}'):
+            os.remove(f'data/temp/{path}/{file.name}')
 
     def __purge_all(self, config: ConfigParser) -> None:
         """Purge all Folders."""

@@ -4,4 +4,4 @@ branch = True
 [report]
 omit =
     *venv*,
-    *.tox*s
+    *.tox*,
