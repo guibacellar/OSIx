@@ -69,6 +69,9 @@ class UsernameScanner(BaseModule):
             logger.info(f'\t\tTarget File "{target_file}". Loading...')
             h_result = json.loads(''.join(TempFileHandler.read_file_text(target_file)))
 
+        # Add Detected into Main Data
+        self.__add_into_data(h_result, data)
+
         # Dump the Output File
         if args['username_enable_dump_file']:
             dump_file_content: str = 'site,url'
@@ -445,6 +448,22 @@ class UsernameScanner(BaseModule):
             'query_time': query_time,
             'context': context
             }
+
+    def __add_into_data(self, h_result: Optional[Dict], data: Dict) -> None:
+        """Add the Detected Accounts into Data."""
+
+        if h_result is None:
+            return
+
+        # Add all Usernames and Accounts to Main Data
+        if 'detected' not in data['username']:
+            data['username']['detected'] = {}
+
+        for network, network_data in h_result.items():
+            data['username']['detected'][network] = network_data
+
+            if 'response_text' in data['username']['detected'][network]:
+                del data['username']['detected'][network]['response_text']
 
 
 class SherlockFuturesSession(FuturesSession):  # type: ignore
