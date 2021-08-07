@@ -20,7 +20,7 @@ jobs:
 
     - name: Run Code Quality
       run: |
-        tox -e codequality
+        tox -e quality
         
     - name: Run Unittests and Code Coverage
       run: |
