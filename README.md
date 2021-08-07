@@ -5,6 +5,12 @@ Open Source Intelligence eXplorer
 
 ----
 
+[![QA](https://github.com/guibacellar/OSIx/actions/workflows/qa.yml/badge.svg?branch=develop)](https://github.com/guibacellar/OSIx/actions/workflows/qa.yml)
+![](https://img.shields.io/github/last-commit/guibacellar/OSIx)
+![](https://img.shields.io/github/languages/code-size/guibacellar/OSIx)
+
+---
+
 OSIx is a Python tool to Explore the Open Source Intelligence Data. 
 
 Created using a Modular Architecture, the OSIx easily allow to add new modules to enrich the available functionalities.
