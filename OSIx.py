@@ -60,6 +60,10 @@ class OSIx:
         data: Dict = {}
         logger.info('[*] Executing Pipeline:')
         for pipeline_item in self.config['PIPELINE']['pipeline_sequence'].split('\n'):
+
+            if pipeline_item == '':
+                continue
+
             logger.info(f'\t[+] {pipeline_item}')
             pipeline_item_meta: List[str] = pipeline_item.split('.')
 

@@ -4,4 +4,9 @@ branch = True
 [report]
 omit =
     *venv*,
-    *.tox*s
+    *.tox*,
+    OSIx.py,
+    *__init__.py,
+    core\chrome_driver_manager.py,
+    core\constants.py,
+    core\http_manager.py

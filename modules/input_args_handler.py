@@ -23,6 +23,7 @@ class InputArgsHandler(BaseModule):
             'help': 'Job Name. Used to Save/Restore State File.',
             'default': uuid4().hex.upper()
             },
+
         'purge_temp_files': {
             'param': '--purge_temp_files',
             'type': str,
@@ -30,6 +31,7 @@ class InputArgsHandler(BaseModule):
             'help': 'Force Delete All Temporary Files',
             'default': False
             },
+
         'btc_wallet': {
             'param': '--btc_wallet',
             'type': str,
@@ -57,7 +59,43 @@ class InputArgsHandler(BaseModule):
             'action': 'store_true',
             'help': 'Allow to Export the BitCoin Transactions as Gephi File',
             'default': True
-            }
+            },
+
+        'username': {
+            'param': '--username',
+            'type': str,
+            'action': 'store',
+            'help': 'Username to Search',
+            'default': ''
+            },
+        'username_allow_nsfw_scan': {
+            'param': '--username_allow_nsfw_scan',
+            'type': str,
+            'action': 'store_true',
+            'help': 'Allow the Executor to Scan the NSFW WebSites',
+            'default': False
+            },
+        'username_print_result': {
+            'param': '--username_print_result',
+            'type': str,
+            'action': 'store_true',
+            'help': 'Allow to Print the Result in sysout',
+            'default': True
+            },
+        'username_show_all': {
+            'param': '--username_show_all',
+            'type': str,
+            'action': 'store_true',
+            'help': 'Allow to Print all Results, otherwise, Print Only the Founded Ones.',
+            'default': False
+            },
+        'username_enable_dump_file': {
+            'param': '--username_enable_dump_file',
+            'type': str,
+            'action': 'store_true',
+            'help': 'Allow to Dump a Result file into data/export Folder.',
+            'default': False
+            },
         }
 
     def run(self, config: ConfigParser, args: Dict, data: Dict) -> None:
