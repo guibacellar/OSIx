@@ -1,6 +1,7 @@
 
 # Other
 data/
+tests/data/
 .idea
 .tox
 assets/chrome_driver.zip

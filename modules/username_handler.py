@@ -355,10 +355,7 @@ class UsernameScanner(BaseModule):
                     allow_redirects = True
 
                 # This future starts running the request in a new thread, doesn't block the main thread
-                future = request_method(url=url_probe, headers=headers,
-                                        allow_redirects=allow_redirects,
-                                        timeout=int(config['MODULE_UsernameScanner']['connection_timeout_sec'])
-                                        )
+                future = self.__get_future(allow_redirects, config, headers, request_method, url_probe)
 
                 # Store future in data for access later
                 net_info["request_future"] = future
@@ -367,6 +364,16 @@ class UsernameScanner(BaseModule):
             results_total[social_network] = results_site
 
         return results_total
+
+    def __get_future(self, allow_redirects: bool, config: ConfigParser, headers: Dict, request_method: FuturesSession, url_probe: str) -> FuturesSession:  # pylint: disable=R0913
+        """Get the Future."""
+
+        return request_method(
+            url=url_probe,
+            headers=headers,
+            allow_redirects=allow_redirects,
+            timeout=int(config['MODULE_UsernameScanner']['connection_timeout_sec'])
+            )
 
     def __create_session(self, target_sites: Dict) -> FuturesSession:
         """Create the HTTP Session."""
@@ -399,6 +406,7 @@ class UsernameScanner(BaseModule):
 
         try:
             response = request_future.result()
+
             if response is not None and response.status_code:
                 error_context = ''
 
@@ -423,6 +431,11 @@ class UsernameScanner(BaseModule):
             expected_text = str(err)
 
         return response, error_context, expected_text
+
+    def __get_future_result(self, request_future: FuturesSession) -> requests.Response:
+        """The the Future Result."""
+
+        return request_future.result()  # type: ignore
 
     def __build(self, username: str, site_name: str, site_url_user: str, status: str, query_time: Optional[float] = None, context: str = None) -> Dict:  # pylint: disable=R0913
         """
