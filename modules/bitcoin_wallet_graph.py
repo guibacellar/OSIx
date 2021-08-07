@@ -1,4 +1,4 @@
-"""Bitcoint Wallet Graph Generator."""
+"""Bitcoin Wallet Graph Generator."""
 
 from configparser import ConfigParser
 from typing import Dict, List
