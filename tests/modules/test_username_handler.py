@@ -8,6 +8,8 @@ from configparser import ConfigParser
 from uuid import uuid4
 import hashlib
 
+import requests.exceptions
+
 from core.temp_file import TempFileHandler
 from modules.temp_file_manager import TempFileManager
 from modules.username_handler import UsernameScanner
@@ -38,12 +40,28 @@ class UsernameScannerTest(unittest.TestCase):
 
             def result(self):
 
-                target_file: str = f'tests/assets/username_responses/{hashlib.md5(self.url.encode("utf-8")).hexdigest()}.json';
+                target_file: str = f'tests/assets/username_responses/{hashlib.md5(self.url.encode("utf-8")).hexdigest()}.json'
+
+                if self.url == 'http://forum.3dnews.ru/member.php?username=marcos':
+                    raise requests.exceptions.HTTPError()
+
+                elif self.url == 'https://www.7cups.com/@marcos':
+                    raise requests.exceptions.ProxyError()
+
+                elif self.url == 'https://about.me/marcos':
+                    raise requests.exceptions.ConnectionError()
+
+                elif self.url == 'https://www.alik.cz/u/marcos':
+                    raise requests.exceptions.Timeout()
+
+                elif self.url == 'https://discussions.apple.com/profile/marcos':
+                    raise requests.exceptions.RequestException()
 
                 if not os.path.exists(target_file):
                     return MockResponse(text="", status_code=404)
 
                 with open(target_file, 'r', encoding='utf-8') as file:
+
                     json_data: Dict = json.loads(file.read())
 
                     return MockResponse(
