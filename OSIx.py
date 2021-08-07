@@ -22,7 +22,7 @@ logger = logging.getLogger()
 
 BANNER: str = '''
 OSIx - Open Source Intelligence eXplorer
-Version: 0.0.1
+Version: 0.0.2
 By: Th3 0bservator
 '''
 
