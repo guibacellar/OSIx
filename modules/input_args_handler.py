@@ -109,7 +109,7 @@ class InputArgsHandler(BaseModule):
     def run(self, config: ConfigParser, args: Dict, data: Dict) -> None:
         """Execute Module."""
 
-        parser = argparse.ArgumentParser(description='Process some integers.')
+        parser = argparse.ArgumentParser(description='OSIx - Open Source Intelligence Explorer.')
 
         # Add Parameters to Arg Parser
         for arg in InputArgsHandler.__ARGS:

@@ -1,25 +1,55 @@
-# OSIx - **O**pen **S**ource **I**ntelligence e**X**plorer 
-
-**Version:** 0.0.2
-
-**By:** Th3 0bservator
+# OSIx - **O**pen **S**ource **I**ntelligence e**X**plorer - V0.0.3
 
 [![QA](https://github.com/guibacellar/OSIx/actions/workflows/qa.yml/badge.svg?branch=develop)](https://github.com/guibacellar/OSIx/actions/workflows/qa.yml)
 ![](https://img.shields.io/github/last-commit/guibacellar/OSIx)
 ![](https://img.shields.io/github/languages/code-size/guibacellar/OSIx)
 ![](https://img.shields.io/badge/Python-3.7.6+-green.svg)
 ![](https://img.shields.io/badge/maintainer-Th3%200bservator-blue)
-----
 
-OSIx is a Python tool to Explore the Open Source Intelligence Data, created to help Researchers, Investigators and Law Enforcement Agents to Collect and Process OSINT Data.
+<!-- TABLE OF CONTENTS -->
+<details open="open">
+  <summary>Table of Contents</summary>
+  <ol>
+    <li>
+      <a href="#about-the-project">About The Project</a>
+    </li>
+    <li>
+      <a href="#getting-started">Getting Started</a>
+      <ul>
+        <li><a href="#prerequisites">Prerequisites</a></li>
+        <li><a href="#installation">Installation</a></li>
+      </ul>
+    </li>
+    <li><a href="#available-modules">Available Modules</a></li>
+    <li><a href="#usage">Usage</a></li>
+    <li><a href="#roadmap">Roadmap</a></li>
+    <li><a href="#contributing">Contributing</a></li>
+    <li><a href="#license">License</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ol>
+</details>
 
-Created using a Modular Architecture, the OSIx easily allows to add new modules to enrich the available functionalities.
 
-----
 
-# Download & Install
+<!-- ABOUT THE PROJECT -->
+## About The Project
 
-## Release
+OSIx is a OSINT (Open Source Intelligence) tool created to help Researchers, Investigators and Law Enforcement Agents to Collect and Process Open Data.
+
+Created in Python and using a Modular Architecture, the OSIx easily allows to add new modules to enrich the available functionalities.
+
+
+<!-- GETTING STARTED -->
+## Getting Started
+
+
+### Prerequisites
+
+ * Python 3.6.7+
+
+### Installation
+
+**Stable**
 ```bash
 wget https://github.com/guibacellar/OSIx/archive/master.zip
 unzip -o master.zip
@@ -28,7 +58,7 @@ pip3 install -r OSIx/requirements.txt
 rm -rf master.zip
 ```
 
-## Develop
+**In Development**
 ```bash
 wget https://github.com/guibacellar/OSIx/archive/develop.zip
 unzip -o develop.zip
@@ -37,17 +67,58 @@ pip3 install -r OSIx/requirements.txt
 rm -rf develop.zip
 ```
 
----
+<!-- AVAILABLE MODULES -->
+## Available Modules
 
-# Available Modules
+* Username Search
+  * Username Searcher - Allow to find the Specified Username in 150+ Websites (Including NSFW Ones) and Export a CSV file with the Founded Entries;
+  * GitHub Username Grabber - Download GitHub Data from Specified Username (Profile Data, Location, Repositories, Followers and Following Accounts);
+* [Bitcoin Wallet Info & Transactions](docs/module_btc_waller.md) - Download the Bitcoin Transactions from a Wallet and Generates Graphs for Visualization (Gephi and GraphML Compatible);
 
- * [Bitcoin Wallet Info & Transactions](docs/module_btc_waller.md) - Download the Bitcoin Transactions from a Wallet and Generates Graphs for Visualization (Gephi and GraphML Compatible);
- * Username Search (TBD Documentation) - Find the Specified Username in 150+ Websites (Including NSFW Ones) and Export a CSV file with the Founded Entries;
----
 
-# Basic Command Line
+<!-- USAGE EXAMPLES -->
+## Usage
 
-### Jobname
+### Command Line
+
+```bash
+usage: OSIx.py [-h] [--job_name JOB_NAME] [--purge_temp_files]
+               [--btc_wallet BTC_WALLET] [--btc_get_transactions]
+               [--export_btc_transactions_as_graphml]
+               [--export_btc_transactions_as_gephi] [--username USERNAME]
+               [--username_scan] [--username_allow_nsfw_scan]
+               [--username_print_result] [--username_show_all]
+               [--username_enable_dump_file]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --job_name JOB_NAME   Job Name. Used to Save/Restore State File.
+  --purge_temp_files    Force Delete All Temporary Files
+  --btc_wallet BTC_WALLET
+                        BitCoin Wallet Address
+  --btc_get_transactions
+                        Allow to Download All BitCoin Transactions from Wallet
+  --export_btc_transactions_as_graphml
+                        Allow to Export the BitCoin Transactions as GraphML
+  --export_btc_transactions_as_gephi
+                        Allow to Export the BitCoin Transactions as Gephi File
+  --username USERNAME   Username to Search
+  --username_scan       Allow the Executor to Scan the the Username in All
+                        Social Networks and WebSites
+  --username_allow_nsfw_scan
+                        Allow the Executor to Scan the NSFW WebSites
+  --username_print_result
+                        Allow to Print the Result in sysout
+  --username_show_all   Allow to Print all Results, otherwise, Print Only the
+                        Founded Ones.
+  --username_enable_dump_file
+                        Allow to Dump a Result file into data/export Folder.
+
+
+```
+
+
+**Jobname**
 
 The *job_name* parameter allow to specify a job name to the executor and the executor will save a state file with all parameters and configurations.
 
@@ -55,7 +126,7 @@ The *job_name* parameter allow to specify a job name to the executor and the exe
 python OSIx.py --job_name MY_JOB
 ```
 
-### Purge All Temporary Files
+**Purge All Temporary Files**
 
 The *purge_temp_files* parameter tell's to the executor to cleanup all generated temporary files.
 
@@ -63,7 +134,7 @@ The *purge_temp_files* parameter tell's to the executor to cleanup all generated
 python OSIx.py --purge_temp_files
 ```
 
-# Output Example
+**Output Example**
 ```bash
 python3 OSIx.py \
         --username marcos --username_allow_nsfw_scan \
@@ -144,3 +215,38 @@ By: Th3 0bservator
 
 
 ```
+
+<!-- ROADMAP -->
+## Roadmap
+
+See the [open issues](https://github.com/othneildrew/Best-README-Template/issues) for a list of proposed features (and known issues).
+
+
+<!-- CONTRIBUTING -->
+## Contributing
+
+Contributions are what make the open source community such an amazing place to be learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+
+<!-- LICENSE -->
+## License
+
+Distributed under the Apache License. See `LICENSE` for more information.
+
+
+
+<!-- CONTACT -->
+## Contact
+
+**Th3 0bservator**
+
+[![Foo](https://img.shields.io/badge/RSS-FFA500?style=for-the-badge&logo=rss&logoColor=white)](https://www.theobservator.net/) 
+[![Foo](https://img.shields.io/badge/Twitter-1DA1F2?style=for-the-badge&logo=twitter&logoColor=white)](https://twitter.com/th3_0bservator) 
+[![Foo](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/guibacellar/) 
+[![Foo](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/guilherme-bacellar/)
