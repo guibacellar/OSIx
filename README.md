@@ -41,8 +41,8 @@ rm -rf develop.zip
 
 # Available Modules
 
- * [Bitcoin Wallet Info & Transactions](docs/module_btc_waller.md)
- * Username Search (TBD Documentation)
+ * [Bitcoin Wallet Info & Transactions](docs/module_btc_waller.md) - Download the Bitcoin Transactions from a Wallet and Generates Graphs for Visualization (Gephi and GraphML Compatible);
+ * Username Search (TBD Documentation) - Find the Specified Username in 150+ Websites (Including NSFW Ones) and Export a CSV file with the Founded Entries;
 ---
 
 # Basic Command Line
@@ -65,7 +65,7 @@ python OSIx.py --purge_temp_files
 
 # Output Example
 ```bash
-python3 OSIx.py --job_name dev_001 \
+python3 OSIx.py \
         --username marcos --username_allow_nsfw_scan \
         --username_print_result --username_enable_dump_file
 

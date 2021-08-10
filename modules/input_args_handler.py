@@ -68,6 +68,13 @@ class InputArgsHandler(BaseModule):
             'help': 'Username to Search',
             'default': ''
             },
+        'username_scan': {
+            'param': '--username_scan',
+            'type': str,
+            'action': 'store_true',
+            'help': 'Allow the Executor to Scan the the Username in All Social Networks and WebSites',
+            'default': False
+            },
         'username_allow_nsfw_scan': {
             'param': '--username_allow_nsfw_scan',
             'type': str,
@@ -96,6 +103,7 @@ class InputArgsHandler(BaseModule):
             'help': 'Allow to Dump a Result file into data/export Folder.',
             'default': False
             },
+
         }
 
     def run(self, config: ConfigParser, args: Dict, data: Dict) -> None:

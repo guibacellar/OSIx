@@ -45,6 +45,10 @@ class UsernameScanner(BaseModule):
             target_username = args['username']
             data['username']['target_username'] = target_username
 
+        if not args['username_scan']:
+            logger.info('\t\tUsername Scan not Enabled. Skipping...')
+            return
+
         # Load the Targets File
         targets: Dict = json.loads(''.join(ResourcesFileHandler.read_file_text('username_scanner_targets.json')))
 
@@ -482,7 +486,7 @@ class UsernameScanner(BaseModule):
 class SherlockFuturesSession(FuturesSession):  # type: ignore
     """Sherlock Future Session."""
 
-    def request(self, method, url, hooks={}, *args, **kwargs):  # type: ignore # pylint: disable=R0913, W1113, W0102 # noqa: B006
+    def request(self, method, url, hooks={}, *args, **kwargs):  # type: ignore # pylint: disable=R0913, W1113, W0102, W0221 # noqa: B006
         """
         Request.
 

@@ -1,7 +1,6 @@
 """Username Scanner Tests."""
 import json
 import os
-import sys
 import unittest
 from typing import Dict
 from configparser import ConfigParser
@@ -10,7 +9,6 @@ import hashlib
 
 import requests.exceptions
 
-from core.temp_file import TempFileHandler
 from modules.temp_file_manager import TempFileManager
 from modules.username_handler import UsernameScanner
 from unittest import mock
@@ -75,7 +73,7 @@ class UsernameScannerTest(unittest.TestCase):
 
         target: UsernameScanner = UsernameScanner()
         random_username: str = uuid4().hex
-        args: Dict = {'username': random_username, 'username_allow_nsfw_scan': True, 'username_enable_dump_file': True}
+        args: Dict = {'username': random_username, 'username_allow_nsfw_scan': True, 'username_enable_dump_file': True, 'username_scan': True}
         data: Dict = {}
 
         with open('tests/assets/username_handler_do_scan_mocked_data.json') as file:
@@ -132,7 +130,8 @@ class UsernameScannerTest(unittest.TestCase):
             'username_allow_nsfw_scan': True,
             'username_enable_dump_file': True,
             'username_print_result': True,
-            'username_show_all': True
+            'username_show_all': True,
+            'username_scan': True
         }
         data: Dict = {}
 
