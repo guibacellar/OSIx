@@ -28,8 +28,8 @@ class BitcoinWalletGraphGeneratorTest(unittest.TestCase):
 
         # Copy the Asset file to data folder
         shutil.copy(
-            'tests/assets/1Mn8mS3w5VGGRUYmoamJTGAhmQj7JTq8e3_transactions.json',
-            'data/temp/bitcoin_wallet/1Mn8mS3w5VGGRUYmoamJTGAhmQj7JTq8e3ut_transactions.json'
+            os.path.abspath(os.path.join(os.getcwd(), 'tests/assets/1Mn8mS3w5VGGRUYmoamJTGAhmQj7JTq8e3_transactions.json')),
+            os.path.abspath(os.path.join(os.getcwd(), 'data/temp/bitcoin_wallet/1Mn8mS3w5VGGRUYmoamJTGAhmQj7JTq8e3ut_transactions.json'))
         )
 
         target: BitcoinWalletGraphGenerator = BitcoinWalletGraphGenerator()
@@ -55,8 +55,8 @@ class BitcoinWalletGraphGeneratorTest(unittest.TestCase):
 
         # Copy the Asset file to data folder
         shutil.copy(
-            'tests/assets/1Mn8mS3w5VGGRUYmoamJTGAhmQj7JTq8e3_transactions.json',
-            'data/temp/bitcoin_wallet/1Mn8mS3w5VGGRUYmoamJTGAhmQj7JTq8e3ut_transactions.json'
+            os.path.abspath(os.path.join(os.getcwd(), 'tests/assets/1Mn8mS3w5VGGRUYmoamJTGAhmQj7JTq8e3_transactions.json')),
+            os.path.abspath(os.path.join(os.getcwd(), 'data/temp/bitcoin_wallet/1Mn8mS3w5VGGRUYmoamJTGAhmQj7JTq8e3ut_transactions.json'))
         )
 
         target: BitcoinWalletGraphGenerator = BitcoinWalletGraphGenerator()
