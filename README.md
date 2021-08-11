@@ -71,9 +71,9 @@ rm -rf develop.zip
 ## Available Modules
 
 * Username Search
-  * Username Searcher - Allow to find the Specified Username in 150+ Websites (Including NSFW Ones) and Export a CSV file with the Founded Entries;
-  * GitHub Username Grabber - Download GitHub Data from Specified Username (Profile Data, Location, Repositories, Followers and Following Accounts);
-* [Bitcoin Wallet Info & Transactions](docs/module_btc_waller.md) - Download the Bitcoin Transactions from a Wallet and Generates Graphs for Visualization (Gephi and GraphML Compatible);
+  * [Username Searcher](docs/module_username.md) - Allow to find the Specified Username in 150+ Websites (Including NSFW Ones) and Export a CSV file with the Founded Entries;
+    * GitHub Username Grabber - Download GitHub Data from Specified Username (Profile Data, Location, Repositories, Followers and Following Accounts);
+* [Bitcoin Wallet Info & Transactions](docs/module_btc_wallet.md) - Download the Bitcoin Transactions from a Wallet and Generates Graphs for Visualization (Gephi and GraphML Compatible);
 
 
 <!-- USAGE EXAMPLES -->
