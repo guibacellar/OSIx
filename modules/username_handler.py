@@ -65,8 +65,7 @@ class UsernameScanner(BaseModule):
             h_result = self.__do_scan(
                 target_username=target_username,
                 target_sites=targets,
-                config=config,
-                args=args
+                config=config
                 )
             TempFileHandler.write_file_text(target_file, json.dumps(h_result))
         else:
@@ -75,6 +74,9 @@ class UsernameScanner(BaseModule):
 
         # Add Detected into Main Data
         self.__add_into_data(h_result, data)
+
+        # Print Results
+        self.__print_result(args, h_result)
 
         # Dump the Output File
         if args['username_enable_dump_file']:
@@ -89,7 +91,21 @@ class UsernameScanner(BaseModule):
                 file.flush()
                 file.close()
 
-    def __do_scan(self, target_username: str, target_sites: Dict, config: ConfigParser, args: Dict) -> Dict:
+    def __print_result(self, args: Dict, h_result: Optional[Dict]) -> None:
+        """Print the Result in Sysout."""
+
+        if h_result is None or not args['username_print_result']:
+            return
+
+        for key, value in h_result.items():
+
+            if 'status' not in value:
+                continue
+
+            if args['username_show_all'] or (not args['username_show_all'] and value['status']['status'] == UsernameScanner.QS_CLAIMED):
+                logger.info(f'\t\t{key}: {value["status"]["status"]} > {value["url_user"]}')
+
+    def __do_scan(self, target_username: str, target_sites: Dict, config: ConfigParser) -> Dict:
         """
         Execute the Scan.
 
@@ -113,13 +129,12 @@ class UsernameScanner(BaseModule):
         self.__parse_data(
             target_username=target_username,
             target_sites=target_sites,
-            results_total=results_total,
-            args=args
+            results_total=results_total
             )
 
         return results_total
 
-    def __parse_data(self, target_username: str, target_sites: Dict, results_total: Dict, args: Dict) -> None:  # pylint: disable=R0914
+    def __parse_data(self, target_username: str, target_sites: Dict, results_total: Dict) -> None:  # pylint: disable=R0914
         """
         Download and Parse WebSites Data.
 
@@ -198,10 +213,6 @@ class UsernameScanner(BaseModule):
 
             # Add this site's results into final dictionary with all of the other results.
             results_total[social_network] = results_site
-
-            if args['username_print_result']:
-                if args['username_show_all'] or (not args['username_show_all'] and result['status'] == UsernameScanner.QS_CLAIMED):
-                    logger.info(f'\t\t{social_network}: {result["status"]} > {result["site_url_user"]}')
 
     def __parse_by_url(self, request_future: requests.Response, response_time: float, social_network: str, target_username: str, url: str) -> Dict:  # pylint: disable=R0913
         """Parse the Result by URL."""

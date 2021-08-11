@@ -73,7 +73,7 @@ class UsernameScannerTest(unittest.TestCase):
 
         target: UsernameScanner = UsernameScanner()
         random_username: str = uuid4().hex
-        args: Dict = {'username': random_username, 'username_allow_nsfw_scan': True, 'username_enable_dump_file': True, 'username_scan': True}
+        args: Dict = {'username': random_username, 'username_allow_nsfw_scan': True, 'username_enable_dump_file': True, 'username_scan': True, 'username_print_result': True, 'username_show_all': False}
         data: Dict = {}
 
         with open('tests/assets/username_handler_do_scan_mocked_data.json') as file:
@@ -92,8 +92,7 @@ class UsernameScannerTest(unittest.TestCase):
             patched_do_scan.assert_called_once_with(
                 target_username=random_username,
                 target_sites=mock.ANY,
-                config=self.config,
-                args=args
+                config=self.config
             )
 
             # Double Run
