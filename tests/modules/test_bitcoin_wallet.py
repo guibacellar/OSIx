@@ -6,6 +6,7 @@ import unittest
 from typing import Dict
 from configparser import ConfigParser
 
+from core.dir_manager import DirectoryManagerUtils
 from core.temp_file import TempFileHandler
 from modules.bitcoin_wallet import BitcoinWalletInfoDownloader, BitcoinWalletTransactionsDownloader
 from unittest.mock import patch
@@ -17,6 +18,10 @@ class BitcoinWalletInfoDownloaderTest(unittest.TestCase):
 
         self.config = ConfigParser()
         self.config.read('config.ini')
+
+        DirectoryManagerUtils.ensure_dir_struct('data/')
+        DirectoryManagerUtils.ensure_dir_struct('data/temp/')
+        DirectoryManagerUtils.ensure_dir_struct('data/temp/bitcoin_wallet')
 
     def mocked_requests_get(*args, **kwargs):
         class MockResponse:
@@ -81,6 +86,10 @@ class BitcoinWalletTransactionsDownloaderTest(unittest.TestCase):
 
         self.config = ConfigParser()
         self.config.read('config.ini')
+
+        DirectoryManagerUtils.ensure_dir_struct('data/')
+        DirectoryManagerUtils.ensure_dir_struct('data/temp/')
+        DirectoryManagerUtils.ensure_dir_struct('data/temp/bitcoin_wallet')
 
     def mocked_requests_get(*args, **kwargs):
         class MockResponse:

@@ -18,11 +18,11 @@ class TempFileHandler:
         :return:
         """
 
-        if not os.path.exists(os.path.join(TempFileHandler.ROOT_PATH, 'data/temp/')):
-            os.mkdir(os.path.join(TempFileHandler.ROOT_PATH, 'data/temp/'))
+        if not os.path.exists(os.path.abspath(os.path.join(TempFileHandler.ROOT_PATH, 'data/temp/'))):
+            os.mkdir(os.path.abspath(os.path.join(TempFileHandler.ROOT_PATH, 'data/temp/')))
 
-        if not os.path.exists(os.path.join(TempFileHandler.ROOT_PATH, f'data/temp/{path}')) :
-            os.mkdir(os.path.join(TempFileHandler.ROOT_PATH, f'data/temp/{path}'))
+        if not os.path.exists(os.path.abspath(os.path.join(TempFileHandler.ROOT_PATH, f'data/temp/{path}'))):
+            os.mkdir(os.path.abspath(os.path.join(TempFileHandler.ROOT_PATH, f'data/temp/{path}')))
 
     @staticmethod
     def file_exist(path: str) -> bool:
@@ -33,7 +33,7 @@ class TempFileHandler:
         :return:
         """
 
-        return os.path.exists(os.path.join(TempFileHandler.ROOT_PATH, f'data/temp/{path}'))
+        return os.path.exists(os.path.abspath(os.path.join(TempFileHandler.ROOT_PATH, f'data/temp/{path}')))
 
     @staticmethod
     def read_file_text(path: str) -> List[str]:
@@ -44,7 +44,7 @@ class TempFileHandler:
         :return: File Content
         """
 
-        with open(os.path.join(TempFileHandler.ROOT_PATH, f'data/temp/{path}'), 'r', encoding='utf-8') as file:
+        with open(os.path.abspath(os.path.join(TempFileHandler.ROOT_PATH, f'data/temp/{path}')), 'r', encoding='utf-8') as file:
             return file.readlines()
 
     @staticmethod
@@ -56,7 +56,7 @@ class TempFileHandler:
         :return: None
         """
 
-        with open(os.path.join(TempFileHandler.ROOT_PATH, f'data/temp/{path}'), 'w', encoding='utf-8') as file:
+        with open(os.path.abspath(os.path.join(TempFileHandler.ROOT_PATH, f'data/temp/{path}')), 'w', encoding='utf-8') as file:
             file.write(content)
             file.flush()
             file.close()
