@@ -14,5 +14,8 @@ class DirectoryManagerUtils:
         :param path:
         :return:
         """
-        if not os.path.exists(path):
-            os.mkdir(path)
+
+        target_path: str = os.path.abspath(os.path.join(os.getcwd(), path))
+
+        if not os.path.exists(target_path):
+            os.mkdir(target_path)
