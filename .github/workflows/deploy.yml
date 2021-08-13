@@ -24,7 +24,7 @@ jobs:
 
     - name: Package
       run: |
-        tox -e release
+        tox -e build
 
 #    - name: Deploy
 #      run: |
