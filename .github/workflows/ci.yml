@@ -5,14 +5,14 @@ on:
     branches:
       - main
       - develop
-      -
+
   pull_request:
     branches:
       - develop
       - master
 
 jobs:
-  Code Quality:
+  CodeQuality:
     runs-on: ubuntu-latest
 
     steps:
@@ -35,7 +35,7 @@ jobs:
       run: |
         tox -e coverage
 
-  Tests & Coverage:
+  TestsAndCodeCoverage:
     runs-on: ubuntu-latest
 
     steps:
