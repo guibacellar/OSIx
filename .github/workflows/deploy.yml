@@ -1,5 +1,7 @@
 name: QA
 
+  on: workflow_dispatch
+
 jobs:
 
   PyPi Publish:
