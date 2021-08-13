@@ -5,7 +5,7 @@ on:
     inputs:
       target_environment:
         description: Target GitHub Environment
-        default: develop
+        default: DEVELOP
         required: true
 
 jobs:
