@@ -6,9 +6,9 @@ import hashlib
 from configparser import ConfigParser
 from typing import Dict, Optional, Tuple
 
-from core.base_module import BaseModule
-from core.http_manager import HttpNavigationManager
-from core.temp_file import TempFileHandler
+from OSIx.core.base_module import BaseModule
+from OSIx.core.http_manager import HttpNavigationManager
+from OSIx.core.temp_file import TempFileHandler
 
 logger = logging.getLogger()
 

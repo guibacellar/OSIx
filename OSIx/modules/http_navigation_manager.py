@@ -7,9 +7,9 @@ import logging
 
 import random
 
-from core.base_module import BaseModule
+from OSIx.core.base_module import BaseModule
 
-from core.http_manager import HttpNavigationManager
+from OSIx.core.http_manager import HttpNavigationManager
 logger = logging.getLogger()
 
 

@@ -4,7 +4,7 @@ import sys
 import unittest
 from typing import Dict
 from configparser import ConfigParser
-from modules.input_args_handler import InputArgsHandler
+from OSIx.modules.input_args_handler import InputArgsHandler
 
 class InputArgsHandlerTest(unittest.TestCase):
 

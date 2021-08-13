@@ -11,10 +11,10 @@ import hashlib
 
 import requests.exceptions
 
-from core.temp_file import TempFileHandler
-from modules.github_username_data_digger import GithubUsernameDataDigger
-from modules.temp_file_manager import TempFileManager
-from modules.username_handler import UsernameScanner
+from OSIx.core.temp_file import TempFileHandler
+from OSIx.modules.github_username_data_digger import GithubUsernameDataDigger
+from OSIx.modules.temp_file_manager import TempFileManager
+from OSIx.modules.username_handler import UsernameScanner
 from unittest import mock
 
 
@@ -33,12 +33,12 @@ class GithubUsernameDataDiggerTest(unittest.TestCase):
         )
 
     def mocked_get(*args, **kwargs):
-        target_file: str = f'tests/assets/github_responses/{hashlib.md5(args[0].encode("utf-8")).hexdigest()}.json'
+        target_file: str = f'assets/github_responses/{hashlib.md5(args[0].encode("utf-8")).hexdigest()}.json'
 
         with open(target_file, 'r', encoding='utf-8') as file:
             return file.read()
 
-    @mock.patch('core.http_manager.HttpNavigationManager.get', side_effect=mocked_get)
+    @mock.patch('OSIx.core.http_manager.HttpNavigationManager.get', side_effect=mocked_get)
     def test_run_elephant_user(self, _mocked_download_text):
 
         target: GithubUsernameDataDigger = GithubUsernameDataDigger()
@@ -79,7 +79,7 @@ class GithubUsernameDataDiggerTest(unittest.TestCase):
         self.assertEqual(data['github']['following'][3], {'name': 'Jonathan Soeder', 'username': 'datapimp', 'url': '/datapimp'})
         self.assertEqual(data['github']['following'][5], {'name': 'Harper Reed', 'username': 'harperreed', 'url': '/harperreed'})
 
-    @mock.patch('core.http_manager.HttpNavigationManager.get', side_effect=mocked_get)
+    @mock.patch('OSIx.core.http_manager.HttpNavigationManager.get', side_effect=mocked_get)
     def test_run_john_user(self, _mocked_download_text):
 
         target: GithubUsernameDataDigger = GithubUsernameDataDigger()
@@ -120,7 +120,7 @@ class GithubUsernameDataDiggerTest(unittest.TestCase):
         self.assertEqual(data['github']['following'][14], {'name': 'Linus Torvalds', 'username': 'torvalds', 'url': '/torvalds'})
         self.assertEqual(data['github']['following'][47], {'name': 'André Arko', 'username': 'indirect', 'url': '/indirect'})
 
-    @mock.patch('core.http_manager.HttpNavigationManager.get', side_effect=mocked_get)
+    @mock.patch('OSIx.core.http_manager.HttpNavigationManager.get', side_effect=mocked_get)
     def test_run_notfounduser001_user(self, _mocked_download_text):
 
         target: GithubUsernameDataDigger = GithubUsernameDataDigger()

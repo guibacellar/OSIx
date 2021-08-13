@@ -10,9 +10,9 @@ import requests
 
 from urllib3.exceptions import InsecureRequestWarning
 from requests_futures.sessions import FuturesSession
-from core.base_module import BaseModule
-from core.resources_manager import ResourcesFileHandler
-from core.temp_file import TempFileHandler
+from OSIx.core.base_module import BaseModule
+from OSIx.core.resources_manager import ResourcesFileHandler
+from OSIx.core.temp_file import TempFileHandler
 
 
 logger = logging.getLogger()

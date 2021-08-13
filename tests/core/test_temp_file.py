@@ -2,7 +2,7 @@
 
 import os
 import unittest
-from core.temp_file import TempFileHandler
+from OSIx.core.temp_file import TempFileHandler
 
 
 class TempFileHandlerTest(unittest.TestCase):

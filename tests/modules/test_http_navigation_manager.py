@@ -4,8 +4,8 @@ import unittest
 from typing import Dict
 from configparser import ConfigParser
 
-from core.temp_file import TempFileHandler
-from modules.http_navigation_manager import HttpNavigationManagerHandler
+from OSIx.core.temp_file import TempFileHandler
+from OSIx.modules.http_navigation_manager import HttpNavigationManagerHandler
 from unittest.mock import patch
 
 

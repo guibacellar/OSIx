@@ -1,5 +1,6 @@
 """Temporary Files Manager Tests."""
 
+import os
 import logging
 import logging.config
 
@@ -7,8 +8,8 @@ import unittest
 from typing import Dict
 from configparser import ConfigParser
 
-from core.dir_manager import DirectoryManagerUtils
-from modules.temp_file_manager import TempFileManager
+from OSIx.core.dir_manager import DirectoryManagerUtils
+from OSIx.modules.temp_file_manager import TempFileManager
 
 
 class TempFileManagerTest(unittest.TestCase):

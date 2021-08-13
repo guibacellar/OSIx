@@ -6,9 +6,9 @@ import unittest
 from typing import Dict
 from configparser import ConfigParser
 
-from core.dir_manager import DirectoryManagerUtils
-from core.temp_file import TempFileHandler
-from modules.bitcoin_wallet import BitcoinWalletInfoDownloader, BitcoinWalletTransactionsDownloader
+from OSIx.core.dir_manager import DirectoryManagerUtils
+from OSIx.core.temp_file import TempFileHandler
+from OSIx.modules.bitcoin_wallet import BitcoinWalletInfoDownloader, BitcoinWalletTransactionsDownloader
 from unittest.mock import patch
 
 
@@ -102,7 +102,7 @@ class BitcoinWalletTransactionsDownloaderTest(unittest.TestCase):
 
         if kwargs['url'] == 'https://blockchain.info/rawaddr/WALLET_UUID?format=json&offset=0&limit=1000':
 
-            with open('tests/assets/bitcoin_wallet_transactions.json', 'rb') as file:
+            with open('assets/bitcoin_wallet_transactions.json', 'rb') as file:
                 return MockResponse(file.read(), 200)
 
         return None

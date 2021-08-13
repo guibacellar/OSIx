@@ -1,5 +1,6 @@
 """Bitcoin Wallet Graph Generator."""
 
+import os
 from configparser import ConfigParser
 from typing import Dict, List
 
@@ -9,8 +10,8 @@ import time
 
 import networkx as nx
 
-from core.base_module import BaseModule
-from core.temp_file import TempFileHandler
+from OSIx.core.base_module import BaseModule
+from OSIx.core.temp_file import TempFileHandler
 
 logger = logging.getLogger()
 
@@ -115,4 +116,4 @@ class BitcoinWalletGraphGenerator(BaseModule):
             nx.readwrite.write_graphml_xml(in_graph, f'data/export/btc_wallet_inputs_{target_wallet}.graphml')
 
         # Log
-        logger.info('\t\t3 Exported Files at data/export')
+        logger.info(f'\t\t3 Exported Files at {os.path.abspath("data/export")}')

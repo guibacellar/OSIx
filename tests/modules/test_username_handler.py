@@ -9,8 +9,8 @@ import hashlib
 
 import requests.exceptions
 
-from modules.temp_file_manager import TempFileManager
-from modules.username_handler import UsernameScanner
+from OSIx.modules.temp_file_manager import TempFileManager
+from OSIx.modules.username_handler import UsernameScanner
 from unittest import mock
 
 
@@ -19,7 +19,8 @@ class UsernameScannerTest(unittest.TestCase):
     def setUp(self) -> None:
 
         self.config = ConfigParser()
-        self.config.read('config.ini')
+        print(os.path.dirname('../config.ini'))
+        self.config.read(os.path.join(os.path.dirname(__file__), '../config.ini'))
 
         # Purge Temp File
         TempFileManager().run(
@@ -76,10 +77,10 @@ class UsernameScannerTest(unittest.TestCase):
         args: Dict = {'username': random_username, 'username_allow_nsfw_scan': True, 'username_enable_dump_file': True, 'username_scan': True, 'username_print_result': True, 'username_show_all': False}
         data: Dict = {}
 
-        with open('tests/assets/username_handler_do_scan_mocked_data.json') as file:
+        with open('assets/username_handler_do_scan_mocked_data.json') as file:
             mock_content: str = file.read()
 
-        with mock.patch('modules.username_handler.UsernameScanner._UsernameScanner__do_scan', return_value=json.loads(mock_content)) as patched_do_scan:
+        with mock.patch('OSIx.modules.username_handler.UsernameScanner._UsernameScanner__do_scan', return_value=json.loads(mock_content)) as patched_do_scan:
 
             # First Run
             target.run(
@@ -120,7 +121,7 @@ class UsernameScannerTest(unittest.TestCase):
         # Check Created File
         self.assertTrue(os.path.exists(f'data/export/username_{random_username}.csv'))
 
-    @mock.patch('modules.username_handler.UsernameScanner._UsernameScanner__get_future', side_effect=mocked_get_future_result)
+    @mock.patch('OSIx.modules.username_handler.UsernameScanner._UsernameScanner__get_future', side_effect=mocked_get_future_result)
     def test_run_mock_future(self, mocked_get_future):
 
         target: UsernameScanner = UsernameScanner()

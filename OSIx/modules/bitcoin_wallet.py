@@ -9,8 +9,8 @@ import time
 
 import requests
 
-from core.base_module import BaseModule
-from core.temp_file import TempFileHandler
+from OSIx.core.base_module import BaseModule
+from OSIx.core.temp_file import TempFileHandler
 
 logger = logging.getLogger()
 

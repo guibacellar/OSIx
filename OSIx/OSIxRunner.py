@@ -14,9 +14,9 @@ import logging.config
 from configparser import ConfigParser
 from typing import Dict, List, Optional
 
-from core.base_module import BaseModule
-from core.chrome_driver_manager import ChromeDrivers
-from core.dir_manager import DirectoryManagerUtils
+from OSIx.core.base_module import BaseModule
+from OSIx.core.chrome_driver_manager import ChromeDrivers
+from OSIx.core.dir_manager import DirectoryManagerUtils
 
 logger = logging.getLogger()
 
@@ -27,7 +27,7 @@ By: Th3 0bservator
 '''
 
 
-class OSIx:
+class OSIxRunner:
     """OSIx Main Module."""
 
     def __init__(self) -> None:
@@ -98,8 +98,7 @@ class OSIx:
 
     def __setup_logging(self) -> None:
         """Setup Log Config."""
-
-        logging.config.fileConfig('logging.conf')
+        logging.config.fileConfig(os.path.join(os.path.dirname(__file__), 'logging.conf'))
 
     def __list_modules(self) -> None:
         """
@@ -110,7 +109,7 @@ class OSIx:
 
         # Check Modules
         logger.info('[*] Installed Modules:')
-        for file in os.listdir('modules'):
+        for file in os.listdir(os.path.join(os.path.dirname(__file__), 'modules')):
             if file not in ('__init__.py', '__pycache__'):
                 logger.info(f'\t{file}')
 
@@ -123,8 +122,4 @@ class OSIx:
 
         logger.info('[*] Loading Configurations:')
         self.config = ConfigParser()
-        self.config.read('config.ini')
-
-
-if __name__ == '__main__':
-    exit(OSIx().main())
+        self.config.read(os.path.join(os.path.dirname(__file__), 'config.ini'))

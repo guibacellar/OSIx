@@ -6,9 +6,9 @@ import unittest
 from typing import Dict
 from configparser import ConfigParser
 
-from core.dir_manager import DirectoryManagerUtils
-from core.temp_file import TempFileHandler
-from modules.bitcoin_wallet_graph import BitcoinWalletGraphGenerator
+from OSIx.core.dir_manager import DirectoryManagerUtils
+from OSIx.core.temp_file import TempFileHandler
+from OSIx.modules.bitcoin_wallet_graph import BitcoinWalletGraphGenerator
 from unittest.mock import patch
 
 
@@ -28,7 +28,7 @@ class BitcoinWalletGraphGeneratorTest(unittest.TestCase):
 
         # Copy the Asset file to data folder
         shutil.copy(
-            os.path.abspath(os.path.join(os.getcwd(), 'tests/assets/1Mn8mS3w5VGGRUYmoamJTGAhmQj7JTq8e3_transactions.json')),
+            os.path.abspath(os.path.join(os.getcwd(), 'assets/1Mn8mS3w5VGGRUYmoamJTGAhmQj7JTq8e3_transactions.json')),
             os.path.abspath(os.path.join(os.getcwd(), 'data/temp/bitcoin_wallet/1Mn8mS3w5VGGRUYmoamJTGAhmQj7JTq8e3ut_transactions.json'))
         )
 
@@ -55,7 +55,7 @@ class BitcoinWalletGraphGeneratorTest(unittest.TestCase):
 
         # Copy the Asset file to data folder
         shutil.copy(
-            os.path.abspath(os.path.join(os.getcwd(), 'tests/assets/1Mn8mS3w5VGGRUYmoamJTGAhmQj7JTq8e3_transactions.json')),
+            os.path.abspath(os.path.join(os.getcwd(), 'assets/1Mn8mS3w5VGGRUYmoamJTGAhmQj7JTq8e3_transactions.json')),
             os.path.abspath(os.path.join(os.getcwd(), 'data/temp/bitcoin_wallet/1Mn8mS3w5VGGRUYmoamJTGAhmQj7JTq8e3ut_transactions.json'))
         )
 

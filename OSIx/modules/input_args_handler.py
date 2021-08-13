@@ -7,7 +7,7 @@ from uuid import uuid4
 import argparse
 import logging
 
-from core.base_module import BaseModule
+from OSIx.core.base_module import BaseModule
 
 logger = logging.getLogger()
 

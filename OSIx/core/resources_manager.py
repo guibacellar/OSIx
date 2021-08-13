@@ -16,7 +16,7 @@ class ResourcesFileHandler:
         :return:
         """
 
-        return os.path.exists(f'resources/{path}')
+        return os.path.exists(os.path.join('resources', path))
 
     @staticmethod
     def read_file_text(path: str) -> List[str]:
@@ -26,6 +26,5 @@ class ResourcesFileHandler:
         :param path: File Path
         :return: File Content
         """
-
-        with open(f'resources/{path}', 'r', encoding='utf-8') as file:
+        with open(os.path.join(os.getcwd(), 'resources', path), 'r', encoding='utf-8') as file:
             return file.readlines()

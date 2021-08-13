@@ -6,8 +6,8 @@ from typing import Dict, List
 
 from bs4 import BeautifulSoup, ResultSet, Tag
 
-from core.base_username_data_digger import SimpleUsernameDataDigger
-from core.bs4_helper import BS4Helper
+from OSIx.core.base_username_data_digger import SimpleUsernameDataDigger
+from OSIx.core.bs4_helper import BS4Helper
 
 logger = logging.getLogger()
 

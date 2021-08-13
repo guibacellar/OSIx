@@ -2,7 +2,7 @@
 
 import os
 import unittest
-from core.dir_manager import DirectoryManagerUtils
+from OSIx.core.dir_manager import DirectoryManagerUtils
 
 
 class DirectoryManagerUtilsTest(unittest.TestCase):
