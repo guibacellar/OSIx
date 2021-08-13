@@ -8,8 +8,8 @@ jobs:
 
     runs-on: ubuntu-latest
     env:
-      TWINE_PASSWORD="${{ secrets.PYPI_TOKEN }}"
-      PYPI_TARGET_REPO="${{ secrets.PYPI_TARGET_REPO }}"
+      TWINE_PASSWORD:${{ secrets.PYPI_TOKEN }}
+      PYPI_TARGET_REPO:${{ secrets.PYPI_TARGET_REPO }}
 
     steps:
     - uses: actions/checkout@v2
