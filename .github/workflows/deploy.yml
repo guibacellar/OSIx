@@ -6,6 +6,7 @@ jobs:
 
   Pypi:
    runs-on: ubuntu-latest
+   environment: $GITHUB_REF
    env:
      TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
      PYPI_TARGET_REPO: ${{ secrets.PYPI_TARGET_REPO }}
