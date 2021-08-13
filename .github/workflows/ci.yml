@@ -37,7 +37,8 @@ jobs:
 
   TestsAndCodeCoverage:
     runs-on: ubuntu-latest
-
+    needs: CodeQuality
+    
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python 3.7
