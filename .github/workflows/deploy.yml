@@ -5,13 +5,12 @@ on: workflow_dispatch
 jobs:
 
   Pypi:
+   runs-on: ubuntu-latest
+   env:
+     TWINE_PASSWORD:${{ secrets.PYPI_TOKEN }}
+     PYPI_TARGET_REPO:${{ secrets.PYPI_TARGET_REPO }}
 
-    runs-on: ubuntu-latest
-    env:
-      TWINE_PASSWORD:${{ secrets.PYPI_TOKEN }}
-      PYPI_TARGET_REPO:${{ secrets.PYPI_TARGET_REPO }}
-
-    steps:
+   steps:
     - uses: actions/checkout@v2
     - name: Set up Python 3.7
       uses: actions/setup-python@v2
