@@ -18,7 +18,7 @@ jobs:
    env:
      TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
      PYPI_TARGET_REPO: ${{ secrets.PYPI_TARGET_REPO }}
-     
+ 
    steps:
     - uses: actions/checkout@v2
     - name: Set up Python 3.7
@@ -36,5 +36,9 @@ jobs:
         tox -e build
 
     - name: Deploy
+      env:
+         TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
+         PYPI_TARGET_REPO: ${{ secrets.PYPI_TARGET_REPO }}
+      
       run: |
         tox -e deploy
