@@ -4,7 +4,7 @@ on: workflow_dispatch
 
 jobs:
 
-  PyPi Publish:
+  Pypi:
 
     runs-on: ubuntu-latest
     env:
