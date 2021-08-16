@@ -24,34 +24,22 @@ class GithubUsernameDataDigger(SimpleUsernameDataDigger):
         if not can_activate or username is None:
             return
 
-        # Download the GitHub Profile Page Data
-        base_url = config['MODULE_GithubUsernameDataDigger']['profile_url'].replace('{0}', username)
-        github_data_profile: str = self._download_text(url=base_url, module='github')
-
-        # Load HTML
-        bs4_helper_profile: BS4Helper = BS4Helper(soup=BeautifulSoup(github_data_profile, 'html.parser'))
-
         # Get all Data
-        h_result: Dict = {
-            'profile_pic': bs4_helper_profile.find_by_attribute(attribute_data=('alt', 'Avatar'), target_index=0, target_property='src', null_value=None),
-            'fullname': bs4_helper_profile.find_by_attribute(attribute_data=('itemprop', 'name'), target_index=0, target_property='string', null_value=None),
-            'nickname': bs4_helper_profile.find_by_attribute(attribute_data=('itemprop', 'additionalName'), target_index=0, target_property='string', null_value=None),
-            'bio': bs4_helper_profile.find_by_attribute(attribute_data=('class', 'user-profile-bio'), target_index=0, target_property='string', null_value=None),
-            'location': bs4_helper_profile.find_by_attribute(attribute_data=('itemprop', 'homeLocation'), target_index=0, target_property='text', null_value=None),
-            'website': bs4_helper_profile.find_by_attribute(attribute_data=('itemprop', 'url'), target_index=0, target_property='text', null_value=None),
-            'account_id': bs4_helper_profile.find_by_attribute(attribute_data=('role', 'search'), target_index=0, target_property='data-scope-id', null_value=None),
-            'repos': self.__get_repos(base_url),
-            'followers': self.__get_followers(base_url),
-            'following': self.__get_following(base_url)
-            }
+        h_result: Dict = self.__get_gh_data(
+            config=config,
+            username=username
+            )
+
+        # Add to Data
+        if 'github' not in data:
+            data['github'] = {}
+
+        data['github'][username] = h_result
 
         # Check if Found Anything
         if h_result['account_id'] is None:
             logger.info('\t\tUsername Not Found.')
             return
-
-        # Add to Data
-        data['github'] = h_result
 
         # Dump the Output File
         if args['username_print_result']:
@@ -71,6 +59,30 @@ class GithubUsernameDataDigger(SimpleUsernameDataDigger):
 
             logger.info(f'\t\tFollowing.......: {len(h_result["following"])}')
             _ = [logger.info(f'\t\t\t{item["username"]} ({item["name"]}) at https://github.com{item["url"]}') for item in h_result['following']]  # type: ignore
+
+    def __get_gh_data(self, config: ConfigParser, username: str) -> Dict:
+        """Download and Get GitHub Data."""
+
+        # Download the GitHub Profile Page Data
+        base_url = config['MODULE_GithubUsernameDataDigger']['profile_url'].replace('{0}', username)
+        github_data_profile: str = self._download_text(url=base_url, module='github')
+
+        # Load HTML
+        bs4_helper_profile: BS4Helper = BS4Helper(soup=BeautifulSoup(github_data_profile, 'html.parser'))
+
+        # Get all Data
+        return {
+            'profile_pic': bs4_helper_profile.find_by_attribute(attribute_data=('alt', 'Avatar'), target_index=0, target_property='src', null_value=None),
+            'fullname': bs4_helper_profile.find_by_attribute(attribute_data=('itemprop', 'name'), target_index=0, target_property='string', null_value=None),
+            'nickname': bs4_helper_profile.find_by_attribute(attribute_data=('itemprop', 'additionalName'), target_index=0, target_property='string', null_value=None),
+            'bio': bs4_helper_profile.find_by_attribute(attribute_data=('class', 'user-profile-bio'), target_index=0, target_property='string', null_value=None),
+            'location': bs4_helper_profile.find_by_attribute(attribute_data=('itemprop', 'homeLocation'), target_index=0, target_property='text', null_value=None),
+            'website': bs4_helper_profile.find_by_attribute(attribute_data=('itemprop', 'url'), target_index=0, target_property='text', null_value=None),
+            'account_id': bs4_helper_profile.find_by_attribute(attribute_data=('role', 'search'), target_index=0, target_property='data-scope-id', null_value=None),
+            'repos': self.__get_repos(base_url),
+            'followers': self.__get_followers(base_url),
+            'following': self.__get_following(base_url)
+            }
 
     def __get_following(self, base_url: str) -> List[Dict]:
         """Get the Following."""
