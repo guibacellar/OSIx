@@ -1,7 +1,5 @@
 """Bitcoint Wallet Handler Tests."""
 
-import os
-import sys
 import unittest
 from typing import Dict
 from configparser import ConfigParser
@@ -20,8 +18,6 @@ class BitcoinWalletInfoDownloaderTest(unittest.TestCase):
         self.config.read('config.ini')
 
         DirectoryManagerUtils.ensure_dir_struct('data/')
-        DirectoryManagerUtils.ensure_dir_struct('data/temp/')
-        DirectoryManagerUtils.ensure_dir_struct('data/temp/bitcoin_wallet')
 
     def mocked_requests_get(*args, **kwargs):
         class MockResponse:
@@ -88,8 +84,6 @@ class BitcoinWalletTransactionsDownloaderTest(unittest.TestCase):
         self.config.read('config.ini')
 
         DirectoryManagerUtils.ensure_dir_struct('data/')
-        DirectoryManagerUtils.ensure_dir_struct('data/temp/')
-        DirectoryManagerUtils.ensure_dir_struct('data/temp/bitcoin_wallet')
 
     def mocked_requests_get(*args, **kwargs):
         class MockResponse:

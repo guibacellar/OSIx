@@ -37,7 +37,7 @@ class BitcoinWalletGraphGenerator(BaseModule):
         logger.info('\t\tGenerating BTC Graph')
 
         # Load File
-        json_data: Dict = json.loads(''.join(TempFileHandler.read_file_text(target_file)))
+        json_data: Dict = json.loads(TempFileHandler.read_file_text(target_file))
 
         # Execute Module
         self.__execute(

@@ -31,7 +31,8 @@ REQUIRED = [
     'bs4==0.0.1',
     'lxml==4.6.3',
     'soupsieve==2.2.1',
-    'requests-futures==1.0.0'
+    'requests-futures==1.0.0',
+    'SQLAlchemy==1.4.22'
 ]
 
 # Import the README and use it as the long-description.

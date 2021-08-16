@@ -21,8 +21,6 @@ class StateFileHandlerTest(unittest.TestCase):
         self.config.read('config.ini')
 
         DirectoryManagerUtils.ensure_dir_struct('data/')
-        DirectoryManagerUtils.ensure_dir_struct('data/temp/')
-        DirectoryManagerUtils.ensure_dir_struct('data/temp/state')
 
     def test_run(self):
 

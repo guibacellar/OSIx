@@ -3,6 +3,7 @@
 import abc
 import logging
 import hashlib
+import os
 from configparser import ConfigParser
 from typing import Dict, Optional, Tuple
 
@@ -44,17 +45,17 @@ class SimpleUsernameDataDigger(BaseModule):
 
         return True, target_username
 
-    def _download_text(self, url: str) -> str:
+    def _download_text(self, url: str, module: str) -> str:
         """Download Remote Data."""
 
         # Check Temp File
-        targer_file_name: str = hashlib.md5(url.encode('utf-8')).hexdigest()  # nosec
+        target_file_name: str = hashlib.md5(url.encode('utf-8')).hexdigest()  # nosec
 
         # Load Temporary Files
-        target_file_path: str = f'username_search/{targer_file_name}.json'
+        target_file_path: str = os.path.join('username_search', module, f'{target_file_name}.json')
 
         if TempFileHandler.file_exist(target_file_path):
-            return ''.join(TempFileHandler.read_file_text(target_file_path))
+            return TempFileHandler.read_file_text(target_file_path)
 
         # File Not Exists, Download and Save
         content: str = HttpNavigationManager.get(url)

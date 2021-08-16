@@ -21,16 +21,15 @@ class BitcoinWalletGraphGeneratorTest(unittest.TestCase):
 
         DirectoryManagerUtils.ensure_dir_struct('data/')
         DirectoryManagerUtils.ensure_dir_struct('data/export/')
-        DirectoryManagerUtils.ensure_dir_struct('data/temp/')
-        DirectoryManagerUtils.ensure_dir_struct('data/temp/state')
 
     def test_general_gephi(self):
 
         # Copy the Asset file to data folder
-        shutil.copy(
-            os.path.abspath(os.path.join(os.getcwd(), 'assets/1Mn8mS3w5VGGRUYmoamJTGAhmQj7JTq8e3_transactions.json')),
-            os.path.abspath(os.path.join(os.getcwd(), 'data/temp/bitcoin_wallet/1Mn8mS3w5VGGRUYmoamJTGAhmQj7JTq8e3ut_transactions.json'))
-        )
+        with open(os.path.abspath(os.path.join(os.getcwd(), 'assets/1Mn8mS3w5VGGRUYmoamJTGAhmQj7JTq8e3_transactions.json')), 'r') as file:
+            TempFileHandler.write_file_text(
+                path='bitcoin_wallet/1Mn8mS3w5VGGRUYmoamJTGAhmQj7JTq8e3ut_transactions.json',
+                content=''.join(file.readlines())
+            )
 
         target: BitcoinWalletGraphGenerator = BitcoinWalletGraphGenerator()
         args: Dict = {'export_btc_transactions_as_gephi': True}
@@ -54,10 +53,11 @@ class BitcoinWalletGraphGeneratorTest(unittest.TestCase):
     def test_general_graphml(self):
 
         # Copy the Asset file to data folder
-        shutil.copy(
-            os.path.abspath(os.path.join(os.getcwd(), 'assets/1Mn8mS3w5VGGRUYmoamJTGAhmQj7JTq8e3_transactions.json')),
-            os.path.abspath(os.path.join(os.getcwd(), 'data/temp/bitcoin_wallet/1Mn8mS3w5VGGRUYmoamJTGAhmQj7JTq8e3ut_transactions.json'))
-        )
+        with open(os.path.abspath(os.path.join(os.getcwd(), 'assets/1Mn8mS3w5VGGRUYmoamJTGAhmQj7JTq8e3_transactions.json')), 'r') as file:
+            TempFileHandler.write_file_text(
+                path='bitcoin_wallet/1Mn8mS3w5VGGRUYmoamJTGAhmQj7JTq8e3ut_transactions.json',
+                content=''.join(file.readlines())
+            )
 
         target: BitcoinWalletGraphGenerator = BitcoinWalletGraphGenerator()
         args: Dict = {'export_btc_transactions_as_graphml': True, 'export_btc_transactions_as_gephi': False}

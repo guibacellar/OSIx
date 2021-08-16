@@ -1,16 +1,10 @@
 """Temp File Handle Tests."""
 
-import os
 import unittest
 from OSIx.core.temp_file import TempFileHandler
 
 
 class TempFileHandlerTest(unittest.TestCase):
-
-    def test_ensure_dir_struct(self):
-
-        TempFileHandler.ensure_dir_struct('utd')
-        self.assertTrue(os.path.exists('data/temp/utd'))
 
     def test_file_exist_not_found(self):
         self.assertFalse(TempFileHandler.file_exist('foofile.json'))
