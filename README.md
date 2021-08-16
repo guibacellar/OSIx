@@ -1,6 +1,6 @@
-# OSIx - **O**pen **S**ource **I**ntelligence e**X**plorer - V0.0.3
+# OSIx - **O**pen **S**ource **I**ntelligence e**X**plorer
 
-[![QA](https://github.com/guibacellar/OSIx/actions/workflows/qa.yml/badge.svg?branch=develop)](https://github.com/guibacellar/OSIx/actions/workflows/qa.yml)
+[![CI](https://github.com/guibacellar/OSIx/actions/workflows/ci.yml/badge.svg?branch=develop)](https://github.com/guibacellar/OSIx/actions/workflows/ci.yml)
 ![](https://img.shields.io/github/last-commit/guibacellar/OSIx)
 ![](https://img.shields.io/github/languages/code-size/guibacellar/OSIx)
 ![](https://img.shields.io/badge/Python-3.7.6+-green.svg)
@@ -51,20 +51,12 @@ Created in Python and using a Modular Architecture, the OSIx easily allows to ad
 
 **Stable**
 ```bash
-wget https://github.com/guibacellar/OSIx/archive/master.zip
-unzip -o master.zip
-mv OSIx-master/ OSIx
-pip3 install -r OSIx/requirements.txt
-rm -rf master.zip
+pip3 install OSIx
 ```
 
 **In Development**
 ```bash
-wget https://github.com/guibacellar/OSIx/archive/develop.zip
-unzip -o develop.zip
-mv OSIx-develop/ OSIx
-pip3 install -r OSIx/requirements.txt
-rm -rf develop.zip
+pip3 install --index-url https://test.pypi.org/simple/ OSIx  
 ```
 
 <!-- AVAILABLE MODULES -->
@@ -219,7 +211,7 @@ By: Th3 0bservator
 <!-- ROADMAP -->
 ## Roadmap
 
-See the [open issues](https://github.com/othneildrew/Best-README-Template/issues) for a list of proposed features (and known issues).
+See the [open issues](https://github.com/guibacellar/OSIx/issues) for a list of proposed features (and known issues).
 
 
 <!-- CONTRIBUTING -->

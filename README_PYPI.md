@@ -1,6 +1,6 @@
-# OSIx - **O**pen **S**ource **I**ntelligence e**X**plorer - V0.0.3
+# OSIx - **O**pen **S**ource **I**ntelligence e**X**plorer
 
-[![QA](https://github.com/guibacellar/OSIx/actions/workflows/qa.yml/badge.svg?branch=develop)](https://github.com/guibacellar/OSIx/actions/workflows/qa.yml)
+[![CI](https://github.com/guibacellar/OSIx/actions/workflows/ci.yml/badge.svg?branch=develop)](https://github.com/guibacellar/OSIx/actions/workflows/ci.yml)
 ![](https://img.shields.io/github/last-commit/guibacellar/OSIx)
 ![](https://img.shields.io/github/languages/code-size/guibacellar/OSIx)
 ![](https://img.shields.io/badge/Python-3.7.6+-green.svg)
@@ -13,18 +13,9 @@
     <li>
       <a href="#about-the-project">About The Project</a>
     </li>
-    <li>
-      <a href="#getting-started">Getting Started</a>
-      <ul>
-        <li><a href="#prerequisites">Prerequisites</a></li>
-        <li><a href="#installation">Installation</a></li>
-      </ul>
-    </li>
     <li><a href="#available-modules">Available Modules</a></li>
-    <li><a href="#usage">Usage</a></li>
+    <li><a href="#output-example">Output Example</a></li>
     <li><a href="#roadmap">Roadmap</a></li>
-    <li><a href="#contributing">Contributing</a></li>
-    <li><a href="#license">License</a></li>
     <li><a href="#contact">Contact</a></li>
   </ol>
 </details>
@@ -39,102 +30,16 @@ OSIx is a OSINT (Open Source Intelligence) tool created to help Researchers, Inv
 Created in Python and using a Modular Architecture, the OSIx easily allows to add new modules to enrich the available functionalities.
 
 
-<!-- GETTING STARTED -->
-## Getting Started
-
-
-### Prerequisites
-
- * Python 3.6.7+
-
-### Installation
-
-**Stable**
-```bash
-wget https://github.com/guibacellar/OSIx/archive/master.zip
-unzip -o master.zip
-mv OSIx-master/ OSIx
-pip3 install -r OSIx/requirements.txt
-rm -rf master.zip
-```
-
-**In Development**
-```bash
-wget https://github.com/guibacellar/OSIx/archive/develop.zip
-unzip -o develop.zip
-mv OSIx-develop/ OSIx
-pip3 install -r OSIx/requirements.txt
-rm -rf develop.zip
-```
-
 <!-- AVAILABLE MODULES -->
 ## Available Modules
 
-* Username Search
-  * [Username Searcher](docs/module_username.md) - Allow to find the Specified Username in 150+ Websites (Including NSFW Ones) and Export a CSV file with the Founded Entries;
-    * GitHub Username Grabber - Download GitHub Data from Specified Username (Profile Data, Location, Repositories, Followers and Following Accounts);
-* [Bitcoin Wallet Info & Transactions](docs/module_btc_wallet.md) - Download the Bitcoin Transactions from a Wallet and Generates Graphs for Visualization (Gephi and GraphML Compatible);
+* Username Search, GitHub Username Grabber, Bitcoin Wallet Info & Transactions, and More. 
 
+Please, check the Documentation for all Available Modules and How to Use.
 
-<!-- USAGE EXAMPLES -->
-## Usage
+<!-- Output Example -->
+##Output Example
 
-### Command Line
-
-```bash
-usage: OSIx.py [-h] [--job_name JOB_NAME] [--purge_temp_files]
-               [--btc_wallet BTC_WALLET] [--btc_get_transactions]
-               [--export_btc_transactions_as_graphml]
-               [--export_btc_transactions_as_gephi] [--username USERNAME]
-               [--username_scan] [--username_allow_nsfw_scan]
-               [--username_print_result] [--username_show_all]
-               [--username_enable_dump_file]
-
-optional arguments:
-  -h, --help            show this help message and exit
-  --job_name JOB_NAME   Job Name. Used to Save/Restore State File.
-  --purge_temp_files    Force Delete All Temporary Files
-  --btc_wallet BTC_WALLET
-                        BitCoin Wallet Address
-  --btc_get_transactions
-                        Allow to Download All BitCoin Transactions from Wallet
-  --export_btc_transactions_as_graphml
-                        Allow to Export the BitCoin Transactions as GraphML
-  --export_btc_transactions_as_gephi
-                        Allow to Export the BitCoin Transactions as Gephi File
-  --username USERNAME   Username to Search
-  --username_scan       Allow the Executor to Scan the the Username in All
-                        Social Networks and WebSites
-  --username_allow_nsfw_scan
-                        Allow the Executor to Scan the NSFW WebSites
-  --username_print_result
-                        Allow to Print the Result in sysout
-  --username_show_all   Allow to Print all Results, otherwise, Print Only the
-                        Founded Ones.
-  --username_enable_dump_file
-                        Allow to Dump a Result file into data/export Folder.
-
-
-```
-
-
-**Jobname**
-
-The *job_name* parameter allow to specify a job name to the executor and the executor will save a state file with all parameters and configurations.
-
-```bash
-python OSIx.py --job_name MY_JOB
-```
-
-**Purge All Temporary Files**
-
-The *purge_temp_files* parameter tell's to the executor to cleanup all generated temporary files.
-
-```bash
-python OSIx.py --purge_temp_files
-```
-
-**Output Example**
 ```bash
 python3 OSIx.py \
         --username marcos --username_allow_nsfw_scan \
@@ -219,27 +124,7 @@ By: Th3 0bservator
 <!-- ROADMAP -->
 ## Roadmap
 
-See the [open issues](https://github.com/othneildrew/Best-README-Template/issues) for a list of proposed features (and known issues).
-
-
-<!-- CONTRIBUTING -->
-## Contributing
-
-Contributions are what make the open source community such an amazing place to be learn, inspire, and create. Any contributions you make are **greatly appreciated**.
-
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-
-<!-- LICENSE -->
-## License
-
-Distributed under the Apache License. See `LICENSE` for more information.
-
-
+See the [open issues](https://github.com/guibacellar/OSIx/issues) for a list of proposed features (and known issues).
 
 <!-- CONTACT -->
 ## Contact
