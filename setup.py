@@ -10,7 +10,7 @@ URL = 'https://github.com/guibacellar/OSIx/'
 AUTHOR = 'Th3 0bservator'
 EMAIL = 'th30bservator@gmail.com'
 REQUIRES_PYTHON = '>=3.7.6'
-VERSION = '0.4.6'
+VERSION = open('__version__.txt').read()
 
 # What packages are optional?
 EXTRAS = {
