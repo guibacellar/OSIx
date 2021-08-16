@@ -41,4 +41,5 @@ jobs:
          PYPI_TARGET_REPO: ${{ secrets.PYPI_TARGET_REPO }}
       
       run: |
-        tox -e deploy
+       printenv
+       tox -e deploy
