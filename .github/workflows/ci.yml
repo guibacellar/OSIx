@@ -9,6 +9,7 @@ on:
     paths-ignore:
       - '**/*.md'
       - '**/docs/*.md'
+      - '**/.github/workflows/deploy.yml'
       
   pull_request:
     branches:
