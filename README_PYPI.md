@@ -47,7 +47,6 @@ python3 OSIx.py \
 
 
 OSIx - Open Source Intelligence eXplorer
-Version: 0.0.2
 By: Th3 0bservator
 
 [*] Loading Configurations:
@@ -58,6 +57,7 @@ By: Th3 0bservator
 	input_args_handler.py
 	state_file_handler.py
 	temp_file_manager.py
+	steam_username_data_digger.py
 	username_handler.py
 [*] Executing Pipeline:
 	[+] input_args_handler.InputArgsHandler
