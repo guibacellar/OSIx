@@ -1,20 +1,12 @@
 """GitHub Username Data Digger Tests."""
-import json
-import os
-import shutil
-import sys
+
 import unittest
 from typing import Dict
 from configparser import ConfigParser
-from uuid import uuid4
 import hashlib
 
-import requests.exceptions
-
-from OSIx.core.temp_file import TempFileHandler
-from OSIx.modules.github_username_data_digger import GithubUsernameDataDigger
+from OSIx.modules.github_username_data_digger import GithubUsernameDataDigger, GithubDataPrinter
 from OSIx.modules.temp_file_manager import TempFileManager
-from OSIx.modules.username_handler import UsernameScanner
 from unittest import mock
 
 
@@ -41,16 +33,14 @@ class GithubUsernameDataDiggerTest(unittest.TestCase):
     @mock.patch('OSIx.core.http_manager.HttpNavigationManager.get', side_effect=mocked_get)
     def test_run_elephant_user(self, _mocked_download_text):
 
-        target: GithubUsernameDataDigger = GithubUsernameDataDigger()
+        target_1: GithubUsernameDataDigger = GithubUsernameDataDigger()
+        target_2: GithubDataPrinter = GithubDataPrinter()
         args: Dict = {'username_print_result': True}
         data: Dict = {'username': {'target_username': 'elephant'}}
 
         # First Run
-        target.run(
-            config=self.config,
-            args=args,
-            data=data
-        )
+        target_1.run(config=self.config, args=args, data=data)
+        target_2.run(config=self.config, args=args, data=data)
 
         # Validated Basic Data
         self.assertEqual('https://avatars.githubusercontent.com/u/176842?v=4', data['github']['elephant']['profile_pic'])
@@ -82,16 +72,15 @@ class GithubUsernameDataDiggerTest(unittest.TestCase):
     @mock.patch('OSIx.core.http_manager.HttpNavigationManager.get', side_effect=mocked_get)
     def test_run_john_user(self, _mocked_download_text):
 
-        target: GithubUsernameDataDigger = GithubUsernameDataDigger()
+        target_1: GithubUsernameDataDigger = GithubUsernameDataDigger()
+        target_2: GithubDataPrinter = GithubDataPrinter()
+
         args: Dict = {'username_print_result': True}
         data: Dict = {'username': {'target_username': 'john'}}
 
         # First Run
-        target.run(
-            config=self.config,
-            args=args,
-            data=data
-        )
+        target_1.run(config=self.config, args=args, data=data)
+        target_2.run(config=self.config, args=args, data=data)
 
         # Validated Basic Data
         self.assertEqual('https://avatars.githubusercontent.com/u/1668?v=4', data['github']['john']['profile_pic'])
@@ -123,20 +112,19 @@ class GithubUsernameDataDiggerTest(unittest.TestCase):
     @mock.patch('OSIx.core.http_manager.HttpNavigationManager.get', side_effect=mocked_get)
     def test_run_notfounduser001_user(self, _mocked_download_text):
 
-        target: GithubUsernameDataDigger = GithubUsernameDataDigger()
+        target_1: GithubUsernameDataDigger = GithubUsernameDataDigger()
+        target_2: GithubDataPrinter = GithubDataPrinter()
+
         args: Dict = {'username_print_result': True}
         data: Dict = {'username': {'target_username': 'notfounduser001'}}
 
         # First Run
         with self.assertLogs() as captured:
-            target.run(
-                config=self.config,
-                args=args,
-                data=data
-            )
+            target_1.run(config=self.config, args=args, data=data)
+            target_2.run(config=self.config, args=args, data=data)
 
-        self.assertEqual(len(captured.records), 1)
-        self.assertEqual(f'\t\tUsername Not Found.', captured.records[0].msg)
+        self.assertEqual(len(captured.records), 3)
+        self.assertEqual(f'\t\tUsername Not Found.', captured.records[1].msg)
 
         # Validated Basic Data
         self.assertTrue('github' in data)

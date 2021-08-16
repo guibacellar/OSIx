@@ -25,6 +25,7 @@ class GithubUsernameDataDigger(SimpleUsernameDataDigger):
             return
 
         # Get all Data
+        logger.info('\t\tRunning...')
         h_result: Dict = self.__get_gh_data(
             config=config,
             username=username
@@ -40,25 +41,6 @@ class GithubUsernameDataDigger(SimpleUsernameDataDigger):
         if h_result['account_id'] is None:
             logger.info('\t\tUsername Not Found.')
             return
-
-        # Dump the Output File
-        if args['username_print_result']:
-            logger.info(f'\t\tFull Name.......: {h_result["fullname"]}')
-            logger.info(f'\t\tNick Name.......: {h_result["nickname"]}')
-            logger.info(f'\t\tBio.............: {h_result["bio"]}')
-            logger.info(f'\t\tLocation........: {h_result["location"]}')
-            logger.info(f'\t\tWebSite.........: {h_result["website"]}')
-            logger.info(f'\t\tAccount ID......: {h_result["account_id"]}')
-            logger.info(f'\t\tProfile Picture.: {h_result["profile_pic"]}')
-
-            logger.info(f'\t\tRepos...........: {len(h_result["repos"])}')
-            _ = [logger.info(f'\t\t\t{item["name"]} ({item["description"]}) at https://github.com{item["url"]}') for item in h_result['repos']]  # type: ignore
-
-            logger.info(f'\t\tFollowers.......: {len(h_result["followers"])}')
-            _ = [logger.info(f'\t\t\t{item["username"]} ({item["name"]}) at https://github.com{item["url"]}') for item in h_result['followers']]  # type: ignore
-
-            logger.info(f'\t\tFollowing.......: {len(h_result["following"])}')
-            _ = [logger.info(f'\t\t\t{item["username"]} ({item["name"]}) at https://github.com{item["url"]}') for item in h_result['following']]  # type: ignore
 
     def __get_gh_data(self, config: ConfigParser, username: str) -> Dict:
         """Download and Get GitHub Data."""
@@ -157,3 +139,39 @@ class GithubUsernameDataDigger(SimpleUsernameDataDigger):
                         )
 
         return all_repos
+
+
+class GithubDataPrinter(SimpleUsernameDataDigger):
+    """Print GitHub Data into Sysout."""
+
+    def run(self, config: ConfigParser, args: Dict, data: Dict) -> None:
+        """Execute Module."""
+
+        # Check the Activation and Get The Social Network Data
+        can_activate, username = self._can_activate(data=data)
+
+        if not can_activate or username is None:
+            return
+
+        # Check if Found Anything
+        if data['github'][username]['account_id'] is None:
+            logger.info('\t\tGitHub Account Id Not Present.')
+            return
+
+        if args['username_print_result']:
+            logger.info(f'\t\tFull Name.......: {data["github"][username]["fullname"]}')
+            logger.info(f'\t\tNick Name.......: {data["github"][username]["nickname"]}')
+            logger.info(f'\t\tBio.............: {data["github"][username]["bio"]}')
+            logger.info(f'\t\tLocation........: {data["github"][username]["location"]}')
+            logger.info(f'\t\tWebSite.........: {data["github"][username]["website"]}')
+            logger.info(f'\t\tAccount ID......: {data["github"][username]["account_id"]}')
+            logger.info(f'\t\tProfile Picture.: {data["github"][username]["profile_pic"]}')
+
+            logger.info(f'\t\tRepos...........: {len(data["github"][username]["repos"])}')
+            _ = [logger.info(f'\t\t\t{item["name"]} ({item["description"]}) at https://github.com{item["url"]}') for item in data["github"][username]['repos']]  # type: ignore
+
+            logger.info(f'\t\tFollowers.......: {len(data["github"][username]["followers"])}')
+            _ = [logger.info(f'\t\t\t{item["username"]} ({item["name"]}) at https://github.com{item["url"]}') for item in data["github"][username]['followers']]  # type: ignore
+
+            logger.info(f'\t\tFollowing.......: {len(data["github"][username]["following"])}')
+            _ = [logger.info(f'\t\t\t{item["username"]} ({item["name"]}) at https://github.com{item["url"]}') for item in data["github"][username]['following']]  # type: ignore
