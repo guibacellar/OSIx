@@ -1,19 +1,22 @@
-"""GitHub Username Data Digger - Digger Downloaded Data for Usefull Information."""
+"""Steam Username Data Digger - Digger Downloaded Data for Usefull Information."""
+
+import re
 import logging
 
 from configparser import ConfigParser
-from typing import Dict, List
+from typing import Dict, Optional
 
-from bs4 import BeautifulSoup, ResultSet, Tag
+from bs4 import BeautifulSoup
 
 from OSIx.core.base_username_data_digger import SimpleUsernameDataDigger
 from OSIx.core.bs4_helper import BS4Helper
+from OSIx.core.decorator import bs4_error_hander
 
 logger = logging.getLogger()
 
 
-class GithubUsernameDataDigger(SimpleUsernameDataDigger):
-    """Github Username Data Digger."""
+class SteamUsernameDataDigger(SimpleUsernameDataDigger):
+    """Steam Username Data Digger."""
 
     def run(self, config: ConfigParser, args: Dict, data: Dict) -> None:
         """Execute Module."""
@@ -24,124 +27,168 @@ class GithubUsernameDataDigger(SimpleUsernameDataDigger):
         if not can_activate or username is None:
             return
 
-        # Download the GitHub Profile Page Data
-        base_url = config['MODULE_GithubUsernameDataDigger']['profile_url'].replace('{0}', username)
-        github_data_profile: str = self._download_text(base_url)
+        # Check Steam Section
+        if 'steam' not in data:
+            data['steam'] = {}
 
-        # Load HTML
-        bs4_helper_profile: BS4Helper = BS4Helper(soup=BeautifulSoup(github_data_profile, 'html.parser'))
-
-        # Get all Data
-        h_result: Dict = {
-            'profile_pic': bs4_helper_profile.find_by_attribute(attribute_data=('alt', 'Avatar'), target_index=0, target_property='src', null_value=None),
-            'fullname': bs4_helper_profile.find_by_attribute(attribute_data=('itemprop', 'name'), target_index=0, target_property='string', null_value=None),
-            'nickname': bs4_helper_profile.find_by_attribute(attribute_data=('itemprop', 'additionalName'), target_index=0, target_property='string', null_value=None),
-            'bio': bs4_helper_profile.find_by_attribute(attribute_data=('class', 'user-profile-bio'), target_index=0, target_property='string', null_value=None),
-            'location': bs4_helper_profile.find_by_attribute(attribute_data=('itemprop', 'homeLocation'), target_index=0, target_property='text', null_value=None),
-            'website': bs4_helper_profile.find_by_attribute(attribute_data=('itemprop', 'url'), target_index=0, target_property='text', null_value=None),
-            'account_id': bs4_helper_profile.find_by_attribute(attribute_data=('role', 'search'), target_index=0, target_property='data-scope-id', null_value=None),
-            'repos': self.__get_repos(base_url),
-            'followers': self.__get_followers(base_url),
-            'following': self.__get_following(base_url)
-            }
-
-        # Check if Found Anything
-        if h_result['account_id'] is None:
-            logger.info('\t\tUsername Not Found.')
-            return
+        logger.info('\t\tRunning...')
+        h_result: Dict = self.__get_steam_data(
+            username=username,
+            config=config
+            )
 
         # Add to Data
-        data['github'] = h_result
+        data['steam'][username] = h_result
+
+        # Check if Found Anything
+        if h_result['steam_id'] is None:
+            logger.info('\t\tUsername/SteamId Not Found.')
+            return
+
+    def __get_steam_data(self, username: str, config: ConfigParser) -> Dict:
+        """Get the Steam Data."""
+
+        # Download the Steam Profile Main Page Data
+        base_url = config['MODULE_SteamUsernameDataDigger']['steam_main_profile_url'].replace('{0}', username)
+        steam_data_profile: str = self._download_text(url=base_url, module='steam')
+
+        # Load HTML
+        bs4_helper_profile: BS4Helper = BS4Helper(soup=BeautifulSoup(steam_data_profile, 'html.parser'))
+
+        steam_id: Optional[str] = self.__get_capture_group(config['MODULE_SteamUsernameDataDigger']['steam_id_scan_regex'], steam_data_profile)
+
+        if steam_id is None:
+            return {
+                'steam_id': None,
+                'steam_id_64_dec': None,
+                'username': None,
+                'fullname': None,
+                'location': None,
+                'profile_pic': None
+                }
+
+        return {
+            'steam_id': self.__get_capture_group(config['MODULE_SteamUsernameDataDigger']['steam_id_scan_regex'], steam_data_profile),
+            'steam_id_64_dec': self.__get_capture_group(config['MODULE_SteamUsernameDataDigger']['steam_id_scan_regex'], steam_data_profile),
+            'username': bs4_helper_profile.find_by_attribute(attribute_data=('class', 'actual_persona_name'), target_index=0, target_property='text', null_value=None),
+            'fullname': self.__get_fullname(bs4_helper_profile),
+            'location': bs4_helper_profile.clenup_string(bs4_helper_profile.soup.find_all(attrs={'class': 'header_real_name'})[0].find_all(attrs={'class': 'profile_flag'})[0].next_sibling),
+            'profile_pic': self.__get_profile_image(bs4_helper_profile)
+            }
+
+    @bs4_error_hander()
+    def __get_profile_image(self, bs4_helper_profile: BS4Helper) -> str:
+        """Return the Profile Image."""
+
+        return str(bs4_helper_profile.soup.find_all(attrs={'class': 'playerAvatarAutoSizeInner'})[0].find('img').attrs['src'])
+
+    @bs4_error_hander()
+    def __get_fullname(self, bs4_helper_profile: BS4Helper) -> str:
+        """Return the FullName."""
+
+        return str(bs4_helper_profile.soup.find_all(attrs={'class': 'header_real_name'})[0].find_all('bdi')[0].text)
+
+    @bs4_error_hander()
+    def __get_capture_group(self, regex: str, target: str, index: int = 0) -> Optional[str]:
+        """Safe Get the Capture Group Value."""
+
+        mt: Optional[re.Match[str]] = re.compile(regex).search(target)
+        if mt is None:
+            return None
+
+        return str(mt.groups()[index])
+
+
+class SteamIdFinderDataDigger(SimpleUsernameDataDigger):
+    """Steam Id Finder Data Digger."""
+
+    def run(self, config: ConfigParser, args: Dict, data: Dict) -> None:
+        """Execute Module."""
+
+        # Check the Activation and Get The Social Network Data
+        can_activate, username = self._can_activate(data=data)
+
+        if not can_activate or username is None:
+            return
+
+        # Check if Found Anything
+        h_result: Dict = {
+            'steam_id_64_hex': None,
+            'steam_id_3': None,
+            'steam_id': None,
+            'profile_state': None,
+            'profile_creation_data': None,
+            }
+
+        if data['steam'][username]['steam_id'] is not None:
+            # Get Data
+            logger.info('\t\tRunning...')
+            h_result = self.__get_steam_id_data(
+                steam_id=data['steam'][username]['steam_id'],
+                config=config
+                )
+
+        else:
+            logger.info('\t\tSteamId Not Present.')
+
+        # Update Data
+        data['steam'][username].update(h_result)
+
+    def __get_steam_id_data(self, steam_id: str, config: ConfigParser) -> Dict:
+        """Get the Steam Finder Data."""
+
+        # Download the Steam Profile Main Page Data
+        base_url = config['MODULE_SteamUsernameDataDigger']['steam_finder_url'].replace('{0}', steam_id)
+        steam_data_profile: str = self._download_text(url=base_url, module='steam')
+
+        # Load HTML
+        h_result: Dict = {
+            'steam_id_64_hex': self.__get_capture_group(config['MODULE_SteamUsernameDataDigger']['steam_finder_id64_hex_regex'], steam_data_profile),
+            'steam_id_3': self.__get_capture_group(config['MODULE_SteamUsernameDataDigger']['steam_finder_id3_regex'], steam_data_profile),
+            'steam_id': self.__get_capture_group(config['MODULE_SteamUsernameDataDigger']['steam_finder_id_regex'], steam_data_profile),
+            'profile_state': self.__get_capture_group(config['MODULE_SteamUsernameDataDigger']['steam_finder_profile_state_regex'], steam_data_profile),
+            'profile_creation_data': self.__get_capture_group(config['MODULE_SteamUsernameDataDigger']['steam_finder_profile_created_regex'], steam_data_profile),
+            }
+
+        return h_result
+
+    @bs4_error_hander()
+    def __get_capture_group(self, regex: str, target: str, index: int = 0) -> Optional[str]:
+        """Safe Get the Capture Group Value."""
+
+        mt: Optional[re.Match[str]] = re.compile(regex).search(target)
+        if mt is None:
+            return None
+
+        return str(mt.groups()[index])
+
+
+class SteamDataPrinter(SimpleUsernameDataDigger):
+    """Print Steam Data into Sysout."""
+
+    def run(self, config: ConfigParser, args: Dict, data: Dict) -> None:
+        """Execute Module."""
+
+        # Check the Activation and Get The Social Network Data
+        can_activate, username = self._can_activate(data=data)
+
+        if not can_activate or username is None:
+            return
+
+        # Check if Found Anything
+        if data['steam'][username]['steam_id'] is None:
+            logger.info('\t\tSteamId Not Present.')
+            return
 
         # Dump the Output File
         if args['username_print_result']:
-            logger.info(f'\t\tFull Name.......: {h_result["fullname"]}')
-            logger.info(f'\t\tNick Name.......: {h_result["nickname"]}')
-            logger.info(f'\t\tBio.............: {h_result["bio"]}')
-            logger.info(f'\t\tLocation........: {h_result["location"]}')
-            logger.info(f'\t\tWebSite.........: {h_result["website"]}')
-            logger.info(f'\t\tAccount ID......: {h_result["account_id"]}')
-            logger.info(f'\t\tProfile Picture.: {h_result["profile_pic"]}')
-
-            logger.info(f'\t\tRepos...........: {len(h_result["repos"])}')
-            _ = [logger.info(f'\t\t\t{item["name"]} ({item["description"]}) at https://github.com{item["url"]}') for item in h_result['repos']]  # type: ignore
-
-            logger.info(f'\t\tFollowers.......: {len(h_result["followers"])}')
-            _ = [logger.info(f'\t\t\t{item["username"]} ({item["name"]}) at https://github.com{item["url"]}') for item in h_result['followers']]  # type: ignore
-
-            logger.info(f'\t\tFollowing.......: {len(h_result["following"])}')
-            _ = [logger.info(f'\t\t\t{item["username"]} ({item["name"]}) at https://github.com{item["url"]}') for item in h_result['following']]  # type: ignore
-
-    def __get_following(self, base_url: str) -> List[Dict]:
-        """Get the Following."""
-
-        bs4_helper_following: BS4Helper = BS4Helper(
-            soup=BeautifulSoup(self._download_text(base_url + '?tab=following'), 'html.parser')
-            )
-
-        all_following: List = []
-
-        following_list_node: ResultSet = bs4_helper_following.soup.find_all(attrs={'class': 'd-inline-block no-underline mb-1'})
-
-        if len(following_list_node) > 0:
-            for item in following_list_node:
-                if isinstance(item, Tag):
-
-                    all_following.append(
-                        {
-                            'name': bs4_helper_following.find_by_attribute(attribute_data=('class', 'f4 Link--primary'), target_property='text', target_index=0, target=item),
-                            'username': bs4_helper_following.find_by_attribute(attribute_data=('class', 'Link--secondary'), target_property='text', target_index=0, target=item),
-                            'url': item.attrs['href']
-                            }
-                        )
-
-        return all_following
-
-    def __get_followers(self, base_url: str) -> List[Dict]:
-        """Get User Followers."""
-
-        bs4_helper_followers: BS4Helper = BS4Helper(
-            soup=BeautifulSoup(self._download_text(base_url + '?tab=followers'), 'html.parser')
-            )
-
-        all_followers: List = []
-
-        followers_list_node: ResultSet = bs4_helper_followers.soup.find_all(attrs={'class': 'd-inline-block no-underline mb-1'})
-
-        if len(followers_list_node) > 0:
-            for item in followers_list_node:
-                if isinstance(item, Tag):
-                    all_followers.append(
-                        {
-                            'name': bs4_helper_followers.find_by_attribute(attribute_data=('class', 'f4 Link--primary'), target_property='text', target_index=0, target=item),
-                            'username': bs4_helper_followers.find_by_attribute(attribute_data=('class', 'Link--secondary'), target_property='text', target_index=0, target=item),
-                            'url': item.attrs['href']
-                            }
-                        )
-
-        return all_followers
-
-    def __get_repos(self, base_url: str) -> List[Dict]:
-        """Get Repo List."""
-
-        bs4_helper_repos: BS4Helper = BS4Helper(
-            soup=BeautifulSoup(self._download_text(base_url + '?tab=repositories'), 'html.parser')
-            )
-
-        all_repos: List = []
-
-        repo_list_node: ResultSet = bs4_helper_repos.soup.find_all(attrs={'data-filterable-for': 'your-repos-filter'})
-
-        if len(repo_list_node) > 0:
-            for item in repo_list_node[0].children:
-                if isinstance(item, Tag):
-                    all_repos.append(
-                        {
-                            'name': bs4_helper_repos.find_by_attribute(attribute_data=('itemprop', 'name codeRepository'), target_property='text', target_index=0, target=item),
-                            'description': bs4_helper_repos.find_by_attribute(attribute_data=('itemprop', 'description'), target_property='text', target_index=0, target=item),
-                            'url': bs4_helper_repos.find_by_attribute(attribute_data=('itemprop', 'name codeRepository'), target_property='href', target_index=0, target=item),
-                            'type': 'fork' if 'fork' in item.attrs['class'] else 'owner'
-                            }
-                        )
-
-        return all_repos
+            logger.info(f'\t\tSteam Id..............: {data["steam"][username]["steam_id"]}')
+            logger.info(f'\t\tSteam Id 3............: {data["steam"][username]["steam_id_3"]}')
+            logger.info(f'\t\tSteam Id 64 Hex.......: {data["steam"][username]["steam_id_64_hex"]}')
+            logger.info(f'\t\tSteam Id.64 Dec.......: {data["steam"][username]["steam_id_64_dec"]}')
+            logger.info(f'\t\tUsername..............: {data["steam"][username]["username"]}')
+            logger.info(f'\t\tFull Name.............: {data["steam"][username]["fullname"]}')
+            logger.info(f'\t\tLocation..............: {data["steam"][username]["location"]}')
+            logger.info(f'\t\tProfile Picture.......: {data["steam"][username]["profile_pic"]}')
+            logger.info(f'\t\tProfile State.........: {data["steam"][username]["profile_state"]}')
+            logger.info(f'\t\tProfile Creation Date.: {data["steam"][username]["profile_creation_data"]}')
