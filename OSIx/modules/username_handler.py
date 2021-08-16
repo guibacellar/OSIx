@@ -70,7 +70,7 @@ class UsernameScanner(BaseModule):
             TempFileHandler.write_file_text(target_file, json.dumps(h_result))
         else:
             logger.info(f'\t\tTarget File "{target_file}". Loading...')
-            h_result = json.loads(''.join(TempFileHandler.read_file_text(target_file)))
+            h_result = json.loads(TempFileHandler.read_file_text(target_file))
 
         # Add Detected into Main Data
         self.__add_into_data(h_result, data)

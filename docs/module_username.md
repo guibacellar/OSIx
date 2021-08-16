@@ -7,7 +7,7 @@ This Module Enables the Username Discovery over +150 WebSites and Detailed Infor
   * **Twitch** - PENDING
   * **Tumblr** - PENDING
   * **Pinterest** - PENDING
-  * **Steam** - PENDING
+  * **Steam** - Steam ID's (ID3, ID64, Default ID), Username, Full Name, Location, Profile Picture, Profile State and Profile Creation Date)
   * **Pastebin** - PENDING
   * **Gravatar** - PENDING
 
@@ -170,6 +170,21 @@ python3 -m OSIx --username marcos \
 			dmonti (Daniel Monti) at https://github.com/dmonti
 			lapavila (Luiz Ávila) at https://github.com/lapavila
 			deividi (Deividi) at https://github.com/deividi
+        [+] steam_username_data_digger.SteamUsernameDataDigger
+            Running...
+        [+] steam_username_data_digger.SteamIdFinderDataDigger
+            Running...
+        [+] steam_username_data_digger.SteamDataPrinter
+            Steam Id..............: STEAM_0:0:288072
+            Steam Id 3............: [U:1:576144]
+            Steam Id 64 Hex.......: 11000010008ca90
+            Steam Id.64 Dec.......: 76561197960841872
+            Username..............: _AgainstAllOdds_
+            Full Name.............: Marcus Supressed Here
+            Location..............: Kaufbeuren, Bayern, Germany
+            Profile Picture.......: https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/avatars/ac/acdab7c604bf1e502fa8ae79d004d0b7298eec69_full.jpg
+            Profile State.........: Public
+            Profile Creation Date.: September 16th, 2003
 	[+] state_file_handler.SaveStateFileHandler
 ```
 

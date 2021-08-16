@@ -7,7 +7,7 @@ import json
 import logging
 
 from OSIx.core.base_module import BaseModule
-from OSIx.core.temp_file import TempFileHandler
+from OSIx.core.state_file import StateFileHandler
 
 logger = logging.getLogger()
 
@@ -20,9 +20,9 @@ class LoadStateFileHandler(BaseModule):
 
         state_file_name: str = config['MODULE_LoadStateFileHandler']['file_name'].replace("{0}", args['job_name'])
 
-        if TempFileHandler.file_exist(state_file_name):
+        if StateFileHandler.file_exist(state_file_name):
             data.update(
-                json.loads(''.join(TempFileHandler.read_file_text(state_file_name)))
+                json.loads(StateFileHandler.read_file_text(state_file_name))
                 )
             logger.debug("\t\tState File Loaded.")
 
@@ -35,7 +35,7 @@ class SaveStateFileHandler(BaseModule):
 
         state_file_name: str = config['MODULE_SaveStateFileHandler']['file_name'].replace("{0}", args['job_name'])
 
-        TempFileHandler.write_file_text(
+        StateFileHandler.write_file_text(
             state_file_name,
             json.dumps(data)
             )

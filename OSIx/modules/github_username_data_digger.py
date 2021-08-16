@@ -26,7 +26,7 @@ class GithubUsernameDataDigger(SimpleUsernameDataDigger):
 
         # Download the GitHub Profile Page Data
         base_url = config['MODULE_GithubUsernameDataDigger']['profile_url'].replace('{0}', username)
-        github_data_profile: str = self._download_text(base_url)
+        github_data_profile: str = self._download_text(url=base_url, module='github')
 
         # Load HTML
         bs4_helper_profile: BS4Helper = BS4Helper(soup=BeautifulSoup(github_data_profile, 'html.parser'))
@@ -76,7 +76,7 @@ class GithubUsernameDataDigger(SimpleUsernameDataDigger):
         """Get the Following."""
 
         bs4_helper_following: BS4Helper = BS4Helper(
-            soup=BeautifulSoup(self._download_text(base_url + '?tab=following'), 'html.parser')
+            soup=BeautifulSoup(self._download_text(url=base_url + '?tab=following', module='github'), 'html.parser')
             )
 
         all_following: List = []
@@ -101,7 +101,7 @@ class GithubUsernameDataDigger(SimpleUsernameDataDigger):
         """Get User Followers."""
 
         bs4_helper_followers: BS4Helper = BS4Helper(
-            soup=BeautifulSoup(self._download_text(base_url + '?tab=followers'), 'html.parser')
+            soup=BeautifulSoup(self._download_text(url=base_url + '?tab=followers', module='github'), 'html.parser')
             )
 
         all_followers: List = []
@@ -125,7 +125,7 @@ class GithubUsernameDataDigger(SimpleUsernameDataDigger):
         """Get Repo List."""
 
         bs4_helper_repos: BS4Helper = BS4Helper(
-            soup=BeautifulSoup(self._download_text(base_url + '?tab=repositories'), 'html.parser')
+            soup=BeautifulSoup(self._download_text(url=base_url + '?tab=repositories', module='github'), 'html.parser')
             )
 
         all_repos: List = []

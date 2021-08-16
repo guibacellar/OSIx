@@ -1,28 +1,15 @@
 """Temp File Handle."""
 
-import os
-from typing import List
+from datetime import datetime
+
+import pytz
+
+from OSIx.models.local_db_models import TempDataOrmEntity
+from OSIx.database.local_db import LOCAL_DB_INSTANCE
 
 
 class TempFileHandler:
     """Temporary File Hander."""
-
-    ROOT_PATH: str = os.path.join(os.getcwd())
-
-    @staticmethod
-    def ensure_dir_struct(path: str) -> None:
-        """
-        Ensur That Directory Exists.
-
-        :param path:
-        :return:
-        """
-
-        if not os.path.exists(os.path.abspath(os.path.join(TempFileHandler.ROOT_PATH, 'data/temp/'))):
-            os.mkdir(os.path.abspath(os.path.join(TempFileHandler.ROOT_PATH, 'data/temp/')))
-
-        if not os.path.exists(os.path.abspath(os.path.join(TempFileHandler.ROOT_PATH, f'data/temp/{path}'))):
-            os.mkdir(os.path.abspath(os.path.join(TempFileHandler.ROOT_PATH, f'data/temp/{path}')))
 
     @staticmethod
     def file_exist(path: str) -> bool:
@@ -33,10 +20,10 @@ class TempFileHandler:
         :return:
         """
 
-        return os.path.exists(os.path.abspath(os.path.join(TempFileHandler.ROOT_PATH, f'data/temp/{path}')))
+        return bool(LOCAL_DB_INSTANCE.local_db_session.query(TempDataOrmEntity).filter_by(path=path).count() > 0)
 
     @staticmethod
-    def read_file_text(path: str) -> List[str]:
+    def read_file_text(path: str) -> str:
         """
         Read All File Content.
 
@@ -44,19 +31,56 @@ class TempFileHandler:
         :return: File Content
         """
 
-        with open(os.path.abspath(os.path.join(TempFileHandler.ROOT_PATH, f'data/temp/{path}')), 'r', encoding='utf-8') as file:
-            return file.readlines()
+        entity: TempDataOrmEntity = LOCAL_DB_INSTANCE.local_db_session.query(TempDataOrmEntity).filter_by(path=path).first()
+        return str(entity.data)
 
     @staticmethod
-    def write_file_text(path: str, content: str) -> None:
+    def remove_expired_entries() -> int:
+        """Remove all Expired Entries."""
+
+        total: int = LOCAL_DB_INSTANCE.local_db_session.execute(
+            TempDataOrmEntity.__table__.delete().where(
+                TempDataOrmEntity.valid_at <= int(datetime.now(tz=pytz.UTC).timestamp())
+                )
+            ).rowcount
+
+        LOCAL_DB_INSTANCE.local_db_session.flush()
+        LOCAL_DB_INSTANCE.local_db_session.commit()
+        return total
+
+    @staticmethod
+    def purge() -> int:
+        """Remove all Entries."""
+
+        total: int = LOCAL_DB_INSTANCE.local_db_session.execute(TempDataOrmEntity.__table__.delete()).rowcount
+        LOCAL_DB_INSTANCE.local_db_session.flush()
+        LOCAL_DB_INSTANCE.local_db_session.commit()
+        return total
+
+    @staticmethod
+    def write_file_text(path: str, content: str, validate_seconds: int = 3600) -> None:
         """
         Write Text Content into File.
 
         :param path: File Path
+        :param content: File Content
+        :param validate_seconds: File Validation in Seconds
         :return: None
         """
 
-        with open(os.path.abspath(os.path.join(TempFileHandler.ROOT_PATH, f'data/temp/{path}')), 'w', encoding='utf-8') as file:
-            file.write(content)
-            file.flush()
-            file.close()
+        # Delete if Exists
+        LOCAL_DB_INSTANCE.local_db_session.execute(
+            TempDataOrmEntity.__table__.delete().where(TempDataOrmEntity.path == path)
+            )
+
+        entity: TempDataOrmEntity = TempDataOrmEntity(
+            path=path,
+            data=content,
+            created_at=int(datetime.now(tz=pytz.UTC).timestamp()),
+            valid_at=int(datetime.now(tz=pytz.UTC).timestamp()) + validate_seconds
+            )
+        LOCAL_DB_INSTANCE.local_db_session.add(entity)
+
+        # Execute
+        LOCAL_DB_INSTANCE.local_db_session.flush()
+        LOCAL_DB_INSTANCE.local_db_session.commit()
