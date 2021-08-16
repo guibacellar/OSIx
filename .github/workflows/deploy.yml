@@ -37,7 +37,7 @@ jobs:
 
     - name: Deploy
       env:
-         TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
+         PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
          PYPI_TARGET_REPO: ${{ secrets.PYPI_TARGET_REPO }}
       
       run: |
