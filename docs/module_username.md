@@ -13,17 +13,17 @@ This Module Enables the Username Discovery over +150 WebSites and Detailed Infor
 
 ### Complete Command Line
 ```bash
-python OSIx.py --username guibacellar \
-               --username_scan \
-               --username_allow_nsfw_scan \
-               --username_print_result --username_show_all \
-               --username_enable_dump_file
+python3 -m OSIx --username guibacellar \
+                --username_scan \
+                --username_allow_nsfw_scan \
+                --username_print_result --username_show_all \
+                --username_enable_dump_file
 ``` 
 
 ### Basic Command Line
 
 ```bash
-python OSIx.py --username USERNAME
+python3 -m OSIx --username USERNAME
 ``` 
  * **--username** - Target Username
  
@@ -31,13 +31,13 @@ python OSIx.py --username USERNAME
 
 Scan the Target Username over +150 WebSites.
 ```bash
-python OSIx.py --username USERNAME --username_scan
+python3 -m OSIx --username USERNAME --username_scan
 ``` 
 
 ### Username Scan over Internet + NSFW Sites
 Scan the Target Username over +150 WebSites + NSFW Ones.
 ```bash
-python OSIx.py --username USERNAME --username_scan --username_allow_nsfw_scan
+python3 -m OSIx --username USERNAME --username_scan --username_allow_nsfw_scan
 ``` 
 
 ### Print Scan Result (Only Founded Entries)
@@ -45,7 +45,7 @@ python OSIx.py --username USERNAME --username_scan --username_allow_nsfw_scan
 Print on Sysout the Websites where the Username was Found.
 
 ```bash
-python OSIx.py --username USERNAME --username_allow_nsfw_scan --username_print_result
+python3 -m OSIx --username USERNAME --username_allow_nsfw_scan --username_print_result
 ``` 
 
 ### Print Scan Result (All Entries)
@@ -53,7 +53,7 @@ python OSIx.py --username USERNAME --username_allow_nsfw_scan --username_print_r
 Print on Sysout all Entries (Founded and Not Founded).
 
 ```bash
-python OSIx.py --username USERNAME --username_allow_nsfw_scan --username_print_result --username_show_all
+python3 -m OSIx --username USERNAME --username_allow_nsfw_scan --username_print_result --username_show_all
 ``` 
 
 ### Dump Output File
@@ -61,13 +61,13 @@ python OSIx.py --username USERNAME --username_allow_nsfw_scan --username_print_r
 Exports a CSV File with all Entries at 'data/export/username_USERNAME.csv'.
 
 ```bash
-python OSIx.py --username USERNAME --username_allow_nsfw_scan --username_enable_dump_file
+python3 -m OSIx --username USERNAME --username_allow_nsfw_scan --username_enable_dump_file
 ``` 
 
 ---
 ### Example Utilization
 ```bash
-python OSIx.py --username marcos \
+python3 -m OSIx --username marcos \
                --username_scan --username_allow_nsfw_scan \
                --username_print_result --username_enable_dump_file
 ```

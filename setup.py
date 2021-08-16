@@ -1,7 +1,10 @@
 import io
 import os
 
-from setuptools import find_namespace_packages, setup
+try:
+    from setuptools import setup
+except ImportError:
+    from distutils.core import setup
 
 # Package meta-data.
 NAME = 'OSIx'
@@ -18,13 +21,6 @@ EXTRAS = {
 
 here = os.path.abspath(os.path.dirname(__file__))
 
-# What packages are required for this module to be executed?
-# try:
-#     with io.open(os.path.join(here, 'requirements.txt'), encoding='ascii') as f:
-#         requirements_data = f.read().splitlines()
-# except FileNotFoundError:
-#     requirements_data = ''
-# REQUIRED = [str(req.strip()) for req in requirements_data]
 REQUIRED = [
     'selenium==3.141.0',
     'beautifulsoup4==4.9.3',
@@ -64,10 +60,7 @@ setup(
         "OpenSourceIntelligence",
         "Tool"
     ],
-    packages=find_namespace_packages(
-        exclude=["tests", "*.tests", "*.tests.*", "tests.*", "venv.*"],
-        where="."
-    ),
+    packages=['OSIx'],
     package_data={
         'OSIx': ['py.typed'],
     },

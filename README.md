@@ -56,7 +56,7 @@ pip3 install OSIx
 
 **In Development**
 ```bash
-pip3 install --index-url https://test.pypi.org/simple/ OSIx  
+pip3 install --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple OSIx  
 ```
 
 <!-- AVAILABLE MODULES -->
@@ -74,7 +74,7 @@ pip3 install --index-url https://test.pypi.org/simple/ OSIx
 ### Command Line
 
 ```bash
-usage: OSIx.py [-h] [--job_name JOB_NAME] [--purge_temp_files]
+usage: python3 -m OSIx [-h] [--job_name JOB_NAME] [--purge_temp_files]
                [--btc_wallet BTC_WALLET] [--btc_get_transactions]
                [--export_btc_transactions_as_graphml]
                [--export_btc_transactions_as_gephi] [--username USERNAME]
@@ -115,7 +115,7 @@ optional arguments:
 The *job_name* parameter allow to specify a job name to the executor and the executor will save a state file with all parameters and configurations.
 
 ```bash
-python OSIx.py --job_name MY_JOB
+python3 -m OSIx --job_name MY_JOB
 ```
 
 **Purge All Temporary Files**
@@ -123,19 +123,14 @@ python OSIx.py --job_name MY_JOB
 The *purge_temp_files* parameter tell's to the executor to cleanup all generated temporary files.
 
 ```bash
-python OSIx.py --purge_temp_files
+python3 -m OSIx --purge_temp_files
 ```
 
 **Output Example**
 ```bash
-python3 OSIx.py \
+python3 -m OSIx \
         --username marcos --username_allow_nsfw_scan \
         --username_print_result --username_enable_dump_file
-
-
-OSIx - Open Source Intelligence eXplorer
-Version: 0.0.2
-By: Th3 0bservator
 
 [*] Loading Configurations:
 [*] Installed Modules:

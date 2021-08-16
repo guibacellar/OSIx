@@ -13,7 +13,7 @@ The exportation process always generate 3 distinct files:
 ### Basic Command Line
 
 ```bash
-python OSIx.py --btc_wallet 1Mn8mS3w5VGGRUYmoamJTGAhmQj7JTq8e3 --btc_get_transactions
+python3 -m OSIx --btc_wallet 1Mn8mS3w5VGGRUYmoamJTGAhmQj7JTq8e3 --btc_get_transactions
 ``` 
 
  * **--btc_wallet** - Target Bitcoin Wallet
