@@ -35,14 +35,15 @@ Created in Python and using a Modular Architecture, the OSIx easily allows to ad
 
 * Username Search, GitHub Username Grabber, Bitcoin Wallet Info & Transactions, and More. 
 
-Please, check the Documentation for all Available Modules and How to Use.
+Please, check the [Documentation](https://github.com/guibacellar/OSIx#readme) for all Available Modules and How to Use.
 
 <!-- Output Example -->
+
 ##Output Example
 
 ```bash
-python3 OSIx.py \
-        --username marcos --username_allow_nsfw_scan \
+python3 -m OSIx \
+        --username marcos --username_scan --username_allow_nsfw_scan \
         --username_print_result --username_enable_dump_file
 
 
