@@ -8,7 +8,7 @@ This Module Enables the Username Discovery over +150 WebSites and Detailed Infor
   * **Tumblr** - PENDING
   * **Pinterest** - PENDING
   * **Steam** - Steam ID's (ID3, ID64, Default ID), Username, Full Name, Location, Profile Picture, Profile State and Profile Creation Date)
-  * **Pastebin** - PENDING
+  * **Pastebin** - Username, Views Count, All Pastes Views Count, Profile Picture and all Public Pastes
   * **Gravatar** - PENDING
 
 ### Complete Command Line
