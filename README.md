@@ -66,6 +66,7 @@ pip3 install --index-url https://test.pypi.org/simple/ --extra-index-url https:/
   * [Username Searcher](docs/module_username.md) - Allow to find the Specified Username in 150+ Websites (Including NSFW Ones) and Export a CSV file with the Founded Entries;
     * GitHub Username Grabber - Download GitHub Data from Specified Username (Profile Data, Location, Repositories, Followers and Following Accounts);
     * Steam Username Grabber - Download Steam Data from Specified Username (Name, Location, SteamId's, Location and Profile Picture, Stats and Creation Date);
+    * Pastebin Username Grabber - Download Steam Data from Specified Username (Username, Views Count, All Pastes Views Count, Profile Picture and all Public Pastes);
 * [Bitcoin Wallet Info & Transactions](docs/module_btc_wallet.md) - Download the Bitcoin Transactions from a Wallet and Generates Graphs for Visualization (Gephi and GraphML Compatible);
 
 
