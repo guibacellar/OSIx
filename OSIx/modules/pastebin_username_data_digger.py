@@ -96,7 +96,12 @@ class PastebinUsernameDataDigger(SimpleUsernameDataDigger):
         h_result: List = []
 
         # Load all Public Pastes
-        table_rs: ResultSet = bs4_helper_profile.soup.find_all(attrs={'class': 'maintable'})[0].find_all('tr')
+        element_rs: ResultSet = bs4_helper_profile.soup.find_all(attrs={'class': 'maintable'})
+
+        if len(element_rs) <= 0:
+            return h_result
+
+        table_rs: ResultSet = element_rs[0].find_all('tr')
 
         if len(table_rs) == 0:
             return h_result
