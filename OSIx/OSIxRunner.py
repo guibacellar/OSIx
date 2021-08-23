@@ -31,6 +31,15 @@ By: Th3 0bservator
 class OSIxRunner:
     """OSIx Main Module."""
 
+    MODULE_SUPRESS_LIST: List = [
+        'input_args_handler.py',
+        'state_file_handler.py',
+        'temp_file_manager.py',
+        '__init__.py',
+        '__pycache__'
+        ]
+    """List of Modules to Suppress on SysOut Report"""
+
     def __init__(self) -> None:
         """Module Initialization."""
 
@@ -109,8 +118,8 @@ class OSIxRunner:
 
         # Check Modules
         logger.info('[*] Installed Modules:')
-        for file in os.listdir(os.path.join(os.path.dirname(__file__), 'modules')):
-            if file not in ('__init__.py', '__pycache__'):
+        for file in sorted(os.listdir(os.path.join(os.path.dirname(__file__), 'modules'))):
+            if file not in OSIxRunner.MODULE_SUPRESS_LIST:
                 logger.info(f'\t{file}')
 
     def __load_settings(self) -> None:

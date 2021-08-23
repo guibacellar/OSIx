@@ -33,7 +33,7 @@ Created in Python and using a Modular Architecture, the OSIx easily allows to ad
 <!-- AVAILABLE MODULES -->
 ## Available Modules
 
-* Username Search, GitHub Username Grabber, Bitcoin Wallet Info & Transactions, and More. 
+* Username Search, GitHub / Gravatar / Steam / And More Username Data Grabber, Bitcoin Wallet Info & Transactions, and More. 
 
 Please, check the [Documentation](https://github.com/guibacellar/OSIx#readme) for all Available Modules and How to Use.
 

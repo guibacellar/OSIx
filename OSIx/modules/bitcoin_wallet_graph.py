@@ -87,18 +87,18 @@ class BitcoinWalletGraphGenerator(BaseModule):
         # Process Input Nodes
         for in_node in all_input_nodes:
             all_graph.add_node(in_node)
-            all_graph.add_edge(in_node, target_wallet, key=int(time.clock() * 1000000))
+            all_graph.add_edge(in_node, target_wallet, key=int(time.perf_counter() * 1000000))
 
             in_graph.add_node(in_node)
-            in_graph.add_edge(in_node, target_wallet, key=int(time.clock() * 1000000))
+            in_graph.add_edge(in_node, target_wallet, key=int(time.perf_counter() * 1000000))
 
         # Process Output Nodes
         for out_node in all_output_nodes:
             all_graph.add_node(out_node)
-            all_graph.add_edge(target_wallet, out_node, key=int(time.clock() * 1000000))
+            all_graph.add_edge(target_wallet, out_node, key=int(time.perf_counter() * 1000000))
 
             out_graph.add_node(out_node)
-            out_graph.add_edge(target_wallet, out_node, key=int(time.clock() * 1000000))
+            out_graph.add_edge(target_wallet, out_node, key=int(time.perf_counter() * 1000000))
 
         # Set Node Properties
         if args['export_btc_transactions_as_gephi']:
