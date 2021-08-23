@@ -67,8 +67,25 @@ class OSIxRunner:
         # Load Modules
         args: Dict = {}
         data: Dict = {}
-        logger.info('[*] Executing Pipeline:')
-        for pipeline_item in self.config['PIPELINE']['pipeline_sequence'].split('\n'):
+
+        # Execute Pre Pipeline
+        self.__execute_sequence(args, data, self.config['PIPELINE']['pre_pipeline_sequence'].split('\n'), 'Initialization')
+
+        # Execute Pipeline
+        self.__execute_sequence(args, data, self.config['PIPELINE']['pipeline_sequence'].split('\n'), 'Pipeline')
+
+        # Execute Post Pipeline
+        self.__execute_sequence(args, data, self.config['PIPELINE']['post_pipeline_sequence'].split('\n'), 'Termination')
+
+        # Shutdown all Drivers
+        ChromeDrivers.shutdown()
+
+        return 0
+
+    def __execute_sequence(self, args: Dict, data: Dict, sequence_spec: List, sequence_name: str) -> None:
+
+        logger.info(f'[*] Executing {sequence_name}:')
+        for pipeline_item in sequence_spec:
 
             if pipeline_item == '':
                 continue
@@ -82,12 +99,7 @@ class OSIxRunner:
                 config=self.config,
                 args=args,
                 data=data
-                )
-
-        # Shutdown all Drivers
-        ChromeDrivers.shutdown()
-
-        return 0
+            )
 
     def check_python_version(self) -> bool:
         """Check if the Current Python Version is Supported."""
