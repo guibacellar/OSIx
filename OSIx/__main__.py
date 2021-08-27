@@ -2,6 +2,11 @@
 
 import sys
 import os
+import uvicorn
+
+class WebApp:
+    pass
+
 
 # If we are running from a wheel, add the wheel to sys.path
 if __package__ == "OSIx":
@@ -14,9 +19,9 @@ if __package__ == "OSIx":
     sys.path.insert(0, path)
     os.chdir(os.path.dirname(__file__))
 
+
 if __name__ == "__main__":
-    # Work around the error reported in #9540, pending a proper fix.
-    # Note: It is essential the warning filter is set *before* importing
-    #       pip, as the deprecation happens at import time, not runtime.
-    from OSIxRunner import OSIxRunner
-    sys.exit(OSIxRunner().main())
+    # TODO: Ensure data folder
+
+    # Run the uvicorn
+    uvicorn.run("OSIxApi:app", host="127.0.0.1", port=5000, log_level="debug")

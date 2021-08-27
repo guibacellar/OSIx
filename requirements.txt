@@ -3,7 +3,8 @@ fastapi[all]==0.68.1
 uvicorn[standard]==0.13.4
 
 # DB Deps
-SQLAlchemy==1.4.22
+sqlalchemy[asyncio]==1.4.23
+aiosqlite==0.17.0
 
 # Others
 selenium==3.141.0

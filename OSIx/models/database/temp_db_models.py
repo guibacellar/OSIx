@@ -1,16 +1,15 @@
 """Temporary Data Model."""
 
 from sqlalchemy import Column, Integer, String
-from sqlalchemy.orm import declarative_base
-from OSIx.database.local_db import LOCAL_DB_INSTANCE
+from sqlalchemy.ext.declarative import declarative_base
+
+TempDataBaseDeclarativeBase = declarative_base()
 
 
-Base = declarative_base()
-
-
-class TempDataOrmEntity(Base):
+class TempDataOrmEntity(TempDataBaseDeclarativeBase):
     """Temporary Data ORM Model."""
 
+    __bind_key__ = 'temp'
     __tablename__ = 'temporary_data'
 
     path = Column(String(255), primary_key=True)
@@ -20,14 +19,12 @@ class TempDataOrmEntity(Base):
     valid_at = Column(Integer)
 
 
-class StateFileOrmEntity(Base):
+class StateFileOrmEntity(TempDataBaseDeclarativeBase):
     """Temporary Data ORM Model."""
 
+    __bind_key__ = 'temp'
     __tablename__ = 'state_file'
 
     path = Column(String(255), primary_key=True)
     data = Column(String)
     created_at = Column(Integer)
-
-
-Base.metadata.create_all(LOCAL_DB_INSTANCE.local_db_engine)
