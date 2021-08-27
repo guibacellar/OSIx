@@ -1,4 +1,11 @@
-# Main Deps
+# Web Deps
+fastapi[all]==0.68.1
+uvicorn[standard]==0.13.4
+
+# DB Deps
+SQLAlchemy==1.4.22
+
+# Others
 selenium==3.141.0
 beautifulsoup4==4.9.3
 pytz==2021.1
@@ -9,7 +16,6 @@ bs4==0.0.1
 lxml==4.6.3
 soupsieve==2.2.1
 requests-futures==1.0.0
-SQLAlchemy==1.4.22
 
 # QA
 tox==3.22.0
